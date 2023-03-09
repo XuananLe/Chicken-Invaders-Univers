@@ -81,16 +81,11 @@ void Egg::move_diagonally()
     if(is_broken == true) return;
     rect_.x += v_x;
     rect_.y += v_y;
-    if(rect_.x <= 0 || rect_.x >= SCREEN_WIDTH - rect_.w)
-    {
-        is_broken = true;
-        rect_.w = 76;
-        rect_.h = 57;
-    }
-    if(rect_.y <= 0 || rect_.y >= SCREEN_HEIGHT - rect_.h)
+    if(rect_.y >= 1035)
     {
         rect_.w = 76;
         rect_.h = 57;
+        // The egg has reached the bottom, so it should break
         is_broken = true;
     }
 }

@@ -96,7 +96,6 @@ int main(int argc, char *argv[])
     }
     for (int i = 0; i < number_of_asteroid; i++)
     {
-        asteroid[i].set_rect_cordinate(100 + (i + 1) * 100, 100);
         asteroid[i].set_width_height(75, 68);
         asteroid[i].set_is_on_screen(true);
         asteroid[i].set_speed(2);
@@ -143,20 +142,20 @@ int main(int argc, char *argv[])
                 {
                     isRunning = false;
                 }
-                if (event.key.keysym.sym == SDLK_SPACE)
-                {
-                    isPause = true;
-                    while(isPause == true)
-                    {
-                        SDL_Delay(50);
-                        SDL_PollEvent(&event);
-                        if(event.key.keysym.sym == SDLK_a)
-                        {
-                                    isPause = false;
-                        }
-                        break;
-                    }
-                }
+                // if (event.key.keysym.sym == SDLK_SPACE)
+                // {
+                //     isPause = true;
+                //     while(isPause == true)
+                //     {
+                //         SDL_Delay(50);
+                //         SDL_PollEvent(&event);
+                //         if(event.key.keysym.sym == SDLK_a)
+                //         {
+                //                     isPause = false;
+                //         }
+                //         break;
+                //     }
+                // }
             }
             // handling movement
             player->handling_movement(event);
@@ -197,8 +196,8 @@ int main(int argc, char *argv[])
             for (int i = 0; i < number_of_asteroid; i++)
             {
                 asteroid[i].render_with_angle();
-                asteroid[i].moving_downward();
-                asteroid[i].update();
+                asteroid[i].moving_diagonal();
+                asteroid[i].spinning();
                 player->process_if_hit_by_asteroid(&asteroid[i]);
             }
             if (all_level_2_asteroid_dead(asteroid) == true)

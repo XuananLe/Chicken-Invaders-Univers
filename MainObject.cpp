@@ -278,9 +278,11 @@ void MainObject::process_shooting_if_hit_chicken(Chicken *chicken)
             if (chicken->get_health() <= 0)
             {
                 chicken->set_rect_cordinate_width_and_height(-9999, -9999, 0, 0);
+                chicken->set_speed(0);
                 chicken->set_alive(false);
             }
             ammo_list[i]->set_alive(false);
+            ammo_list[i]->set_speed(0);
             ammo_list[i]->set_can_move(false);
             return;
         }
@@ -302,16 +304,17 @@ void MainObject::process_if_eat_wing_rect(Chicken *chicken)
 // IMPLEMENTATION OF IF HIT BY CHICKEN
 void MainObject::process_if_hit_by_chicken(Chicken *chicken)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if ((chicken->get_health() != 0) && (check_collision_2_rect(chicken->get_rect(), rect_) == true) && (chicken->get_on_screen() == true))
     {
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
         chicken->set_health(-1);
-        std::cout << "MainObject" << chicken->get_health() << std::endl;
-        std::cout << "MainObject" << chicken->get_on_screen() << std::endl;
         chicken->set_on_screen(false);
+        chicken->set_alive(false);
+        MainObject::health = MainObject::health - 1;
+        return;
     }
 }
 

@@ -79,7 +79,11 @@ public:
 
     // SET AND GET METHOD FOR ALIVE
     void set_alive(const bool &alive) { alive_ = alive; }
-    bool get_alive() const { return alive_; }
+    bool get_alive() const 
+    {
+        if(health_ <= 0) return false; 
+        return alive_; 
+    }
 
     // CHICKEN MOVING BACK AND FORTH IN THE SCREEN
     void moving_back_and_forth();

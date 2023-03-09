@@ -9,6 +9,9 @@ class Asteroid
 protected:
 SDL_Texture* texture_;
 SDL_Rect rect_;
+int random_type;
+int v_x;
+int v_y;
 int speed_;
 int health_;
 
@@ -30,8 +33,8 @@ void set_is_on_screen(const bool& is_on_screen){this->is_on_screen = is_on_scree
 bool get_is_on_screen() const{return this->is_on_screen;}
 void render_with_angle();                                                                                                                                                                                                                                                                                                                                                   
 void moving_diagonal();
-void moving_downward();
-void update();
+// void moving_downward();
+void spinning();
 // FREE METHOD
 void free()
 {

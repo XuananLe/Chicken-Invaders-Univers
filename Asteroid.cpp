@@ -1,16 +1,21 @@
 #include "Asteroid.h"
+#include <cstring>
 // Implement Constructor and Destructor
 const double scale_if_health_is_1 = 0.2;
 const double scale_if_health_is_2 = 0.3;
 const double scale_if_health_is_3 = 0.5;
 Asteroid::Asteroid()
 {
-    texture_ = IMG_LoadTexture(renderer, "res/image/asteroid-3.png");
-    rect_.x = 0;
-    rect_.y = 0;
+    random_type = 3 + (double) rand() / RAND_MAX * (5 - 3);
+    std::string type =  "res/image/asteroid-"+std::to_string(random_type)+".png";
+    texture_ = IMG_LoadTexture(renderer,type.c_str());
+    rect_.x = rand() % SCREEN_WIDTH;
+    rect_.y = -100 - rand() % 500;
     rect_.w = static_cast<int>(300 * scale_if_health_is_3);
     rect_.h = static_cast<int>(300 * scale_if_health_is_3);
     speed_ = 5;
+    v_x = rand() % 5 - 2;
+    v_y = rand() % 5 + 2;
     health_ = 3;
     is_on_screen = true;
     spinning_angle_ = 0;
@@ -60,31 +65,26 @@ void Asteroid::render_with_angle()
 }
 void Asteroid::moving_diagonal()
 {
-    rect_.x += speed_;
-    rect_.y += speed_;
+    if(is_on_screen == false) return;
+    rect_.x += v_x;
+    rect_.y += v_y;
+    if(rect_.y >= SCREEN_HEIGHT)
+    {
+        rect_.x = rand() % SCREEN_WIDTH;
+        rect_.y = -100 - rand() % 45;
+        v_x = rand() % 5 - 2;
+        v_y = rand() % 5 + 2;
+    }
 }
-void Asteroid::moving_downward()
+void Asteroid::spinning()
 {
     if (is_on_screen == false)
         return;
     if (health_ <= 0)
         return;
-    rect_.y += speed_;
-}
-void Asteroid::update()
-{
-    if (is_on_screen == false)
-        return;
-    if (health_ <= 0)
-        return;
-    spinning_angle_ += 24;
+    spinning_angle_ += 10;
     if (spinning_angle_ > 360)
     {
         spinning_angle_ = 0;
-    }
-    if (rect_.x > SCREEN_WIDTH || rect_.y > SCREEN_HEIGHT)
-    {
-        rect_.x = rand() % SCREEN_WIDTH;
-        rect_.y = 0;
     }
 }

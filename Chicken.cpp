@@ -159,6 +159,7 @@ void Chicken::render_animation(SDL_Renderer *renderer, const double &scale)
         {
             wing_rect_.y = -9999;
             wing_rect_.x = -9999;
+            speed_ = 0;
             wing_rect_.w = 0;
             wing_rect_.h = 0;
         }
@@ -245,10 +246,9 @@ void Chicken::handle_shooting_eggs(MainObject *main_object)
     Uint32 time_since_last_egg = current_time - last_egg_time_;
 
     int rand_num = rand() % 100 + 1;
-    std::cout << rand_num << std::endl;
-
+    int rand_sec = rand() % 10 + 5;
     // only lay egg if enough time has elapsed and probability is met
-    if (rand_num <= 29 && time_since_last_egg > 3000) // 95% chance of laying egg and 2000ms between eggs
+    if (rand_num <= 29 && time_since_last_egg > rand_sec * 1000) // 95% chance of laying egg and 2000ms between eggs
     {
         double dx = main_object->get_rect().x - rect_.x;
         double dy = main_object->get_rect().y - rect_.y;
