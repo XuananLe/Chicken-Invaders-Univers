@@ -34,26 +34,10 @@ void ThemePlayer::stop_theme()
 void ThemePlayer::play_theme(const char *theme)
 {
     Mix_Music *music;
-    if(theme == "level_1_theme")
-    music = Mix_LoadMUS(level_1_theme);
-    else if(theme == "level_2_theme")
-    music = Mix_LoadMUS(level_2_theme);
-    else if(theme == "boss_level_theme")
-    music = Mix_LoadMUS(boss_level_theme);
-    else
-    {
-        std::cout << "Audio Not Found" << std::endl;
-        exit(EXIT_FAILURE);
-    }
-
+    music = Mix_LoadMUS(theme);
     if (music == NULL)
     {
         printf("Mix_LoadMUS failed: %s\n", Mix_GetError());
-        exit(1);
-    }
-    if (Mix_PlayMusic(music, -1) < 0)
-    {
-        printf("Mix_PlayMusic failed: %s\n", Mix_GetError());
         exit(1);
     }
 }

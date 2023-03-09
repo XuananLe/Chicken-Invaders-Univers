@@ -416,6 +416,10 @@ void MainObject::processing_if_got_present(Present *present)
 {
     if (health <= 0)
         return;
+    if(present == NULL)
+    {
+        return;
+    }
     if (check_collision_2_rect(present->get_rect(), rect_) == true && present->get_is_on_screen() == true)
     {
         Mix_AllocateChannels(100);

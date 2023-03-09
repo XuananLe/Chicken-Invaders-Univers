@@ -13,6 +13,7 @@ const int number_of_asteroid = 15;
 const int chicken_number = 10;
 const int boss_number = 2;
 bool InitData();
+
 Present *present = new Present();
 Asteroid *asteroid = new Asteroid[number_of_asteroid];
 BackGround *back_ground = new BackGround();
@@ -115,7 +116,6 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
         chicken[i].render_the_eggs();
         chicken[i].generate_present();
     }
-    // player->process_if_hit_by_asteroid(asteroid);
     for (int i = 0; i < chicken_number; i++)
     {
         player->process_if_hit_by_chicken(&chicken[i]);
@@ -126,13 +126,23 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     }
 }
 
-// Boss *boss = new Boss();
+void player_touch_present(MainObject * player, Present* present)
+{
+    Mix_AllocateChannels(100);
+    if(present->get_is_on_screen() == true && check_collision_2_rect(player->get_rect(), present->get_rect()) == true)
+    {
+        player->processing_if_got_present(present);
+        player->set_health(player->get_health() + 1);
+        present->set_is_on_screen(false);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
 
     present->set_is_on_screen(true);
-    present->set_rect_cordinate(100, 100);
+    present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
     present->set_kind_of_present(0);
 
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
@@ -171,11 +181,12 @@ int main(int argc, char *argv[])
     {
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
         boss[i].set_clips();
-        boss[i].set_rect_cordinate(300 + i * 200, 300);
+        boss[i].set_rect_cordinate(900, 300);
     }
     Mix_AllocateChannels(100);
     bool isRunning = true;
     bool isPause = false;
+    theme_player->play_theme("res/sound/MENU_THEME.mp3");
     while (isRunning)
     {
         Uint32 current_time = SDL_GetTicks();
@@ -183,21 +194,21 @@ int main(int argc, char *argv[])
         {
             isRunning = false;
         }
-        // if(current_time > last_time_present_fall_down >= 100)
-        // {
-        //     present->set_is_on_screen(true);
-        //     present->set_rect_cordinate(300, 300);
-        //     present->set_kind_of_present(0);
-        //     last_time_present_fall_down = current_time;
-        // }
+        if(current_time > last_time_present_fall_down >= 100 && present->get_is_on_screen() == false)
+        {
+            present->set_is_on_screen(true);
+            present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
+            present->set_kind_of_present(0);
+            last_time_present_fall_down = current_time;
+        }
         Mix_ResumeMusic();
         back_ground->render_background_scroll(renderer);
         back_ground->update_background_scroll();
         back_ground->set_speed(2);
 
-        std::cout << present->get_rect().x << " " << present->get_rect().y << std::endl;
         present->render();
-        std::cout << present->get_rect().x << " " << present->get_rect().y << std::endl;
+        present->update();
+
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
@@ -244,6 +255,10 @@ int main(int argc, char *argv[])
             {
                 level = 3;
             }
+            if(player->get_health() <= 0)
+            {
+                isRunning = false;
+            }
         }
         else if (level == 3)
         {
@@ -257,11 +272,13 @@ int main(int argc, char *argv[])
                 player->processing_if_hit_by_boss(&boss[i]);
                 player->processing_if_hit_by_boss_egg(&boss[i]);
             }
-            if (all_boss_dead(boss) == true)
+            if (all_boss_dead(boss) == true || player->get_health() <= 0)
             {
                 isRunning = false;
             }
         }
+        player_touch_present(player, present);
+        std::cout << present->get_is_on_screen() << std::endl;
         player->render_shooting();
         player->render_animation(renderer, MAIN_OBJECT_SCALE);
 

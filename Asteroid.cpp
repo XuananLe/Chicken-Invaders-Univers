@@ -13,7 +13,7 @@ Asteroid::Asteroid()
     rect_.y = -100 - rand() % 500;
     rect_.w = static_cast<int>(300 * scale_if_health_is_3);
     rect_.h = static_cast<int>(300 * scale_if_health_is_3);
-    speed_ = 5;
+    speed_ = 8;
     v_x = rand() % 5 - 2;
     v_y = rand() % 5 + 2;
     health_ = 3;
