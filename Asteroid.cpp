@@ -66,6 +66,7 @@ void Asteroid::render_with_angle()
 void Asteroid::moving_diagonal()
 {
     if(is_on_screen == false) return;
+    if(health_ <= 0) return;
     rect_.x += v_x;
     rect_.y += v_y;
     if(rect_.y >= SCREEN_HEIGHT)

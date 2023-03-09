@@ -34,6 +34,8 @@ protected:
     int height_of_sprite;
     double v_x;
     double v_y;
+    int dir_x;
+    int dir_y;
     Uint32 last_move_time_; // time since last move
     Uint32 last_egg_time_; // time since last egg was laid
 
@@ -135,6 +137,8 @@ public:
     void moving_toward_the_player(MainObject* main_object);
 
     void moving_toward_the_player();
+
+    void moving_diagnoally();
 
     // FREE METHOD
     void free();

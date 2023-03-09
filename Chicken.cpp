@@ -27,6 +27,11 @@ Chicken::Chicken()
 
     is_on_screen = true;
 
+    v_x = 4;
+    v_y = 4;
+    dir_x = 1;
+    dir_y = 1;
+
     int x_direction = 1; // flags to indicate the direction of the chicken left or right, 1 for right and -1 for left
 
     texture_ = IMG_LoadTexture(renderer, "res/image/chicken123.png");
@@ -191,12 +196,11 @@ void Chicken::moving_back_and_forth()
     }
 }
 
-
-void Chicken::moving_toward_the_player(MainObject * main_object)
+void Chicken::moving_toward_the_player(MainObject *main_object)
 {
-    if(health_ <= 0)
+    if (health_ <= 0)
         return;
-    if(is_on_screen == false)
+    if (is_on_screen == false)
         return;
     double dx = main_object->get_rect().x - rect_.x;
     double dy = main_object->get_rect().y - rect_.y;
@@ -204,7 +208,7 @@ void Chicken::moving_toward_the_player(MainObject * main_object)
     double unit_x = dx / distance;
     double unit_y = dy / distance;
     double speed = 10;
-    Chicken::v_x  = unit_x * speed;
+    Chicken::v_x = unit_x * speed;
     Chicken::v_y = unit_y * speed;
 }
 void Chicken::moving_toward_the_player()
@@ -212,9 +216,6 @@ void Chicken::moving_toward_the_player()
     rect_.x += Chicken::v_x;
     rect_.y += Chicken::v_y;
 }
-
-
-
 
 // IMPLEMENTATION OF CHICKEN MOVEMENT LIEK A CIRCLE
 void Chicken::moving_like_a_circle()
@@ -261,7 +262,7 @@ void Chicken::handle_shooting_eggs(MainObject *main_object)
         Egg *egg = new Egg();
         Mix_AllocateChannels(100);
         egg->set_rect_cordinate(Chicken::rect_.x + Chicken::rect_.w / 2, Chicken::rect_.y + Chicken::rect_.h / 2);
-        egg->set_rect_width_and_height(32,41);
+        egg->set_rect_width_and_height(32, 41);
         egg->set_v_x(egg_vx);
         egg->set_v_y(egg_vy);
         Mix_PlayChannel(-1, chicken_laying_eggs_sound, 0);
@@ -308,6 +309,29 @@ void Chicken::generate_present()
     {
         present->update();
         present->render();
+    }
+}
+
+void Chicken::moving_diagnoally()
+{
+    rect_.x += v_x * dir_x;
+    rect_.y += v_y * dir_y;
+    if (rect_.x < 0)
+    {
+
+        dir_x = 1;
+    }
+    else if (rect_.x + rect_.w > SCREEN_WIDTH)
+    {
+        dir_x = -1;
+    }
+    if (rect_.y < 0)
+    {
+        dir_y = 1;
+    }
+    else if (rect_.y + rect_.h > SCREEN_HEIGHT)
+    {
+        dir_y = -1;
     }
 }
 

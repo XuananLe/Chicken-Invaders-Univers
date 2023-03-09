@@ -9,7 +9,7 @@
 #include "Chicken.h"
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
-const int number_of_asteroid = 10;
+const int number_of_asteroid = 15;
 const int chicken_number = 10;
 const int boss_number = 2;
 bool InitData();
@@ -107,7 +107,7 @@ int main(int argc, char *argv[])
     {
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
         boss[i].set_clips();
-        boss[i].set_rect_cordinate(300 + i * 100, 300);
+        boss[i].set_rect_cordinate(300 + i * 200, 300);
     }
     // if(boss -> get_texture() == NULL)
     // {
@@ -168,7 +168,7 @@ int main(int argc, char *argv[])
             {
                 chicken[i].render_animation(renderer, 1.55);
                 chicken[i].handle_shooting_eggs(player);
-                chicken[i].moving_back_and_forth();
+                chicken[i].moving_diagnoally();
                 chicken[i].update_the_eggs();
                 chicken[i].render_the_eggs();
                 chicken[i].generate_present();
