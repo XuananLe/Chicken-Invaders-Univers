@@ -22,6 +22,8 @@ Chicken *chicken2 = new Chicken[chicken_number];
 ThemePlayer *theme_player = new ThemePlayer();
 Boss *boss = new Boss[boss_number];
 Uint32 last_time_present_fall_down = SDL_GetTicks();
+int level = 1;
+
 
 bool all_level_1_chicken_dead(Chicken *chicken)
 {
@@ -65,7 +67,7 @@ bool all_boss_dead(Boss *boss)
     }
     return true;
 }
-void init_chicken_level_1(Chicken* chicken)
+void init_chicken_level_1(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number; i++)
     {
@@ -83,7 +85,7 @@ void init_chicken_level_1(Chicken* chicken)
         }
     }
 }
-void init_chicken_level_1_2(Chicken* chicken)
+void init_chicken_level_1_2(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number; i++)
     {
@@ -102,28 +104,27 @@ void init_chicken_level_1_2(Chicken* chicken)
     }
 }
 
-void process_chicken_vs_player(Chicken* chicken, MainObject* player)
+void process_chicken_vs_player(Chicken *chicken, MainObject *player)
 {
     for (int i = 0; i < chicken_number; i++)
-            {
-                chicken[i].render_animation(renderer, 1.55);
-                chicken[i].handle_shooting_eggs(player);
-                chicken[i].moving_diagnoally();
-                chicken[i].update_the_eggs();
-                chicken[i].render_the_eggs();
-                chicken[i].generate_present();
-            }
-            // player->process_if_hit_by_asteroid(asteroid);
-            for (int i = 0; i < chicken_number; i++)
-            {
-                player->process_if_hit_by_chicken(&chicken[i]);
-                player->processing_if_got_present(chicken[i].get_present());
-                player->process_shooting_if_hit_chicken(&chicken[i]);
-                player->process_if_hit_by_eggs(&chicken[i]);
-                player->process_if_eat_wing_rect(&chicken[i]);
-            }
+    {
+        chicken[i].render_animation(renderer, 1.55);
+        chicken[i].handle_shooting_eggs(player);
+        chicken[i].moving_diagnoally();
+        chicken[i].update_the_eggs();
+        chicken[i].render_the_eggs();
+        chicken[i].generate_present();
+    }
+    // player->process_if_hit_by_asteroid(asteroid);
+    for (int i = 0; i < chicken_number; i++)
+    {
+        player->process_if_hit_by_chicken(&chicken[i]);
+        player->processing_if_got_present(chicken[i].get_present());
+        player->process_shooting_if_hit_chicken(&chicken[i]);
+        player->process_if_hit_by_eggs(&chicken[i]);
+        player->process_if_eat_wing_rect(&chicken[i]);
+    }
 }
-
 
 // Boss *boss = new Boss();
 int main(int argc, char *argv[])
@@ -156,7 +157,7 @@ int main(int argc, char *argv[])
 
     init_chicken_level_1(chicken);
     init_chicken_level_1_2(chicken2);
-    
+
     for (int i = 0; i < number_of_asteroid; i++)
     {
         asteroid[i].set_width_height(75, 68);
@@ -172,7 +173,6 @@ int main(int argc, char *argv[])
         boss[i].set_clips();
         boss[i].set_rect_cordinate(300 + i * 200, 300);
     }
-    int level = 1;
     Mix_AllocateChannels(100);
     bool isRunning = true;
     bool isPause = false;
@@ -195,9 +195,9 @@ int main(int argc, char *argv[])
         back_ground->update_background_scroll();
         back_ground->set_speed(2);
 
-        present->update();
+        std::cout << present->get_rect().x << " " << present->get_rect().y << std::endl;
         present->render();
-        
+        std::cout << present->get_rect().x << " " << present->get_rect().y << std::endl;
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)

@@ -61,7 +61,6 @@ void Egg::render()
         SDL_RenderCopy(renderer, broken_egg, NULL, &rect_);
     }
 }
-
 // IMPLEMENTATION OF UPDATE METHOD FOR EGG
 void Egg::update()
 {
@@ -89,7 +88,6 @@ void Egg::move_diagonally()
         is_broken = true;
     }
 }
-
 // IMPLEMENTATION OF FREE METHOD
 void Egg::free()
 {

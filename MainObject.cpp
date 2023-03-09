@@ -147,7 +147,7 @@ void MainObject::handling_movement(SDL_Event &event)
 // IMPLEMENT HANDLING SHOOTING
 void MainObject::handling_shooting(SDL_Event &event)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -236,7 +236,6 @@ void MainObject::handling_shooting(SDL_Event &event)
     else
         return;
 }
-
 // IMPLEMENT RENDERING SHOOTING AMMO
 void MainObject::render_shooting()
 {
@@ -300,7 +299,6 @@ void MainObject::process_if_eat_wing_rect(Chicken *chicken)
         chicken->set_on_screen(false);
     }
 }
-
 // IMPLEMENTATION OF IF HIT BY CHICKEN
 void MainObject::process_if_hit_by_chicken(Chicken *chicken)
 {
@@ -317,7 +315,6 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
         return;
     }
 }
-
 void MainObject::process_if_hit_by_eggs(Chicken *chicken)
 {
     if (health == 0)
@@ -337,7 +334,6 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
         }
     }
 }
-
 void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
 {
     if (health == 0)
@@ -357,7 +353,6 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
         }
     }
 }
-
 void MainObject::processing_if_hit_by_boss(Boss *boss)
 {
     if (health == 0)
@@ -386,7 +381,6 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
         }
     }
 }
-
 void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
 {
     if (health == 0)
@@ -417,7 +411,6 @@ void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
         }
     }
 }
-
 // IMPLEMENT PROCESSING IF GET A BONUS
 void MainObject::processing_if_got_present(Present *present)
 {
@@ -451,7 +444,6 @@ void MainObject::processing_if_got_present(Present *present)
         }
     }
 }
-
 // IMPLEMENT FREE METHOD
 void MainObject::free()
 {
