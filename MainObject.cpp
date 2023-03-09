@@ -324,7 +324,7 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
         return;
     for (int i = 0; i < chicken->get_eggs_list().size(); i++)
     {
-        if (check_collision_2_rect(chicken->get_eggs_list()[i]->get_rect(), rect_) == true)
+        if (check_collision_2_rect(chicken->get_eggs_list()[i]->get_rect(), rect_) == true && chicken->get_eggs_list()[i]->get_is_broken() == false)
         {
             if (chicken->get_eggs_list()[i]->get_alive() == false)
                 return;
@@ -421,7 +421,7 @@ void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
 // IMPLEMENT PROCESSING IF GET A BONUS
 void MainObject::processing_if_got_present(Present *present)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if (check_collision_2_rect(present->get_rect(), rect_) == true && present->get_is_on_screen() == true)
     {
