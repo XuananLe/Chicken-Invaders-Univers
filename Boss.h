@@ -28,6 +28,8 @@ int last_egg_firing_time;
 int height_of_sprite;
 int last_egg_time;
 Uint32 last_time_move;
+int v_x;
+int v_y;
 std::vector<Egg*> egg_list;
 Present* present = new Present();
 //SDL_TimerID move_timer_; // how often the boss moves
@@ -96,6 +98,9 @@ void set_health(const int &health){ health_ = health; }
 int get_health() const{ return health_; }
 void move_randomly_up_down_left_right();
 void firing_eggs(MainObject* main_object);
+void moving_toward_player(MainObject * main_object);
+void moving_toward_player();
+
 
 void update_the_eggs()
 {

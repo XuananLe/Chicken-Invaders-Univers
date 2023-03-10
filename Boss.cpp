@@ -17,6 +17,8 @@ Boss::Boss()
     rect_.w = 200;
     rect_.h = 117;
     speed_ = 5;
+    v_x = 0;
+    v_y = 0;
     last_move_ticks_ = SDL_GetTicks();
     last_fire_ticks_ = SDL_GetTicks();
     x_direction_ = 1;
@@ -183,4 +185,18 @@ void Boss::firing_eggs(MainObject *main_object)
     egg->set_v_y(egg_vy);
     Mix_PlayChannel(-1, shooting_egg_sound_, 0);
     egg_list.push_back(egg);
+}
+
+void Boss::moving_toward_player(MainObject *main_object)
+{
+        double dx = main_object->get_rect().x - Boss::rect_.x;
+        double dy = main_object->get_rect().y - Boss::rect_.y;
+        double distance = sqrt(dx * dx + dy * dy);
+        double unit_x = dx / distance;
+        double unit_y = dy / distance;
+        double speed = 10;
+        v_x = unit_x * speed;
+        v_y = unit_y * speed;
+        rect_.x += v_x;
+        rect_.y += v_y;
 }

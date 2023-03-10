@@ -104,7 +104,7 @@ SDL_Rect MainObject::get_rect_width_height_with_scale(const double &scale) const
 // IMPLEMENT HANDLING MOVEMENT
 void MainObject::handling_movement(SDL_Event &event)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
