@@ -9,8 +9,8 @@
 #include "Chicken.h"
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
-const int number_of_asteroid = 15;
-const int chicken_number = 10;
+const int number_of_asteroid = 20;
+const int chicken_number = 30;
 const int boss_number = 2;
 bool InitData();
 
@@ -69,7 +69,7 @@ bool all_boss_dead(Boss *boss)
 }
 void init_chicken_level_1(Chicken *chicken)
 {
-    for (int i = 0; i < chicken_number / 2; i++)
+    for (int i = 0; i < chicken_number / 3; i++)
     {
         chicken[i].generate_present();
         chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
@@ -89,7 +89,7 @@ void init_chicken_level_1(Chicken *chicken)
         chicken[i].generate_present();
         chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
         chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + i * 100, 0);
+        chicken[i].set_rect_cordinate(100 + (i - (chicken_number /2)) * 100, 0);
         chicken[i].set_rect_width_and_height(75, 68);
         chicken[i].set_alive(true);
         chicken[i].set_speed(3);
@@ -217,7 +217,6 @@ int main(int argc, char *argv[])
     }
     while (isRunning)
     {
-        Mix_ResumeMusic();
         Uint32 current_time = SDL_GetTicks();
         if (player->get_health() <= 0)
         {
@@ -257,6 +256,7 @@ int main(int argc, char *argv[])
 
         if (level == 1)
         {
+            Mix_ResumeMusic();
             process_chicken_vs_player(chicken, player);
             if (all_level_1_chicken_dead(chicken) == true && all_level_1_2_chicken_dead(chicken2) == true)
             {
