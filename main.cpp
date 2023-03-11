@@ -263,7 +263,7 @@ void init_boss(Boss *boss)
     {
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
         boss[i].set_clips();
-        boss[i].set_rect_cordinate(900, 300);
+        boss[i].set_rect_cordinate(100 * i , 100);
     }
 }
 void init_menu(GameMenu *menu)
@@ -289,8 +289,8 @@ int main(int argc, char *argv[])
 
     Mix_AllocateChannels(100);
     Mix_Music *theme_1 = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
-
     Mix_PlayMusic(theme_1, 0);
+
     while (menu->get_game_has_started() == false)
     {
         menu->render_menu();
@@ -305,8 +305,11 @@ int main(int argc, char *argv[])
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
+
     theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
     Mix_PlayMusic(theme_1, 0);
+
+    level = 3;
     while (level == 1)
     {
         common_process(player, present, event);
@@ -325,6 +328,9 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
+    theme_1 = Mix_LoadMUS("res/sound/asteroid_level.mp3");
+    Mix_VolumeMusic(30);
+    Mix_PlayMusic(theme_1, 0);
     while (level == 2)
     {
         common_process(player, present, event);
@@ -345,6 +351,8 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
+    theme_1 = Mix_LoadMUS("res/sound/boss_theme.mp3");
+    Mix_PlayMusic(theme_1, 0);
     while (level == 3)
     {
         common_process(player, present, event);
@@ -360,6 +368,7 @@ int main(int argc, char *argv[])
         }
         if (all_boss_dead(boss) == true || player->get_health() <= 0)
         {
+            std::cout << "player_is_dead";
             exit(EXIT_SUCCESS);
         }
         update_game_state();
