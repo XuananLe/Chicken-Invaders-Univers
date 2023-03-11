@@ -23,8 +23,18 @@ void GameMenu::render_menu()
 }
 void GameMenu::process_input(SDL_Event &event)
 {
-    if (event.key.keysym.sym == SDLK_a)
+    if(event.type == SDL_MOUSEBUTTONDOWN)
     {
-        game_has_started = true;
+        int x = 0, y = 0;
+        SDL_GetMouseState(&x, &y);
+        if(x >= 490 && x <= 670 && y >= 900 && y <= 1074)
+        {
+            game_has_started = true;
+            return;
+        }
+        if(x >= 1830 && x <= 1913 && y >= 8 && y <= 90)
+        {
+            exit(EXIT_SUCCESS);
+        }
     }
 }

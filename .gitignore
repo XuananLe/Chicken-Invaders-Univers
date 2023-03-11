@@ -40,3 +40,4 @@ test.*
 main
 testing.cpp
 testing
+something.cpp

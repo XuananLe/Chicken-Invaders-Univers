@@ -224,7 +224,7 @@ int main(int argc, char *argv[])
     bool isRunning = true;
     bool isPause = false;
     bool player_hit_start = false;
-    Mix_Music *theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
+    Mix_Music *theme_1 = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
     if (theme_1 == NULL)
     {
         std::cout << Mix_GetError();
@@ -236,6 +236,7 @@ int main(int argc, char *argv[])
         std::cout << "Main.cpp lmao123";
         exit(EXIT_FAILURE);
     }
+    Mix_PlayMusic(theme_1, 0);
     while (menu->get_game_has_started() == false)
     {
         menu->render_menu();
@@ -245,17 +246,12 @@ int main(int argc, char *argv[])
             {
                 exit(EXIT_FAILURE);
             }
-            if (event.type == SDL_KEYDOWN)
-            {
-                if (event.key.keysym.sym == SDLK_a)
-                {
-                    menu->set_game_has_started(true);
-                }
-            }
+            menu->process_input(event);
         }
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
     }
+    theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
     Mix_PlayMusic(theme_1, 0);
     while (isRunning)
     {
