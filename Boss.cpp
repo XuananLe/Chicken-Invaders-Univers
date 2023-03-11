@@ -189,14 +189,14 @@ void Boss::firing_eggs(MainObject *main_object)
 
 void Boss::moving_toward_player(MainObject *main_object)
 {
-        double dx = main_object->get_rect().x - Boss::rect_.x;
-        double dy = main_object->get_rect().y - Boss::rect_.y;
-        double distance = sqrt(dx * dx + dy * dy);
-        double unit_x = dx / distance;
-        double unit_y = dy / distance;
-        double speed = 10;
-        v_x = unit_x * speed;
-        v_y = unit_y * speed;
-        rect_.x += v_x;
-        rect_.y += v_y;
+    double dx = main_object->get_rect().x - Boss::rect_.x;
+    double dy = main_object->get_rect().y - Boss::rect_.y;
+    double distance = sqrt(dx * dx + dy * dy);
+    double unit_x = dx / distance;
+    double unit_y = dy / distance;
+    double speed = 10;
+    v_x = unit_x * speed;
+    v_y = unit_y * speed;
+    rect_.x += v_x;
+    rect_.y += v_y;
 }

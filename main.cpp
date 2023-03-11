@@ -4,6 +4,7 @@
 #include "MainObject.h"
 #include "BackGround.h"
 #include "ThemePlayer.h"
+#include "menu.h"
 #include "Asteroid.h"
 #include "Boss.h"
 #include "Chicken.h"
@@ -14,6 +15,7 @@ const int chicken_number = 30;
 const int boss_number = 2;
 bool InitData();
 
+GameMenu *menu = new GameMenu();
 Present *present = new Present();
 Asteroid *asteroid = new Asteroid[number_of_asteroid];
 BackGround *back_ground = new BackGround();
@@ -23,7 +25,6 @@ Chicken *chicken2 = new Chicken[chicken_number];
 Boss *boss = new Boss[boss_number];
 Uint32 last_time_present_fall_down = SDL_GetTicks();
 int level = 1;
-
 
 bool all_level_1_chicken_dead(Chicken *chicken)
 {
@@ -84,12 +85,27 @@ void init_chicken_level_1(Chicken *chicken)
             exit(EXIT_FAILURE);
         }
     }
-    for(int i = chicken_number / 2 ; i < chicken_number; i++)
+    for (int i = chicken_number / 3; i < 2 * (chicken_number / 3); i++)
     {
         chicken[i].generate_present();
         chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
         chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + (i - (chicken_number /2)) * 100, 0);
+        chicken[i].set_rect_cordinate(100 + (i - (chicken_number / 3)) * 100, 0);
+        chicken[i].set_rect_width_and_height(75, 68);
+        chicken[i].set_alive(true);
+        chicken[i].set_speed(3);
+        if (chicken[i].get_texture() == NULL)
+        {
+            std::cout << "Chicken texture is not null" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+    }
+    for (int i = 2 * chicken_number / 3; i < chicken_number; i++)
+    {
+        chicken[i].generate_present();
+        chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
+        chicken[i].set_clips();
+        chicken[i].set_rect_cordinate(100 + (i - (2 * chicken_number / 3)) * 100, 100);
         chicken[i].set_rect_width_and_height(75, 68);
         chicken[i].set_alive(true);
         chicken[i].set_speed(3);
@@ -107,7 +123,7 @@ void init_chicken_level_1_2(Chicken *chicken)
         chicken[i].generate_present();
         chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
         chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + i * 100 + 24, chicken[i].get_rect().w);
+        chicken[i].set_rect_cordinate(i * 100, chicken[i].get_rect().w);
         chicken[i].set_rect_width_and_height(75, 68);
         chicken[i].set_alive(true);
         chicken[i].set_speed(3);
@@ -140,10 +156,10 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     }
 }
 
-void player_touch_present(MainObject * player, Present* present)
+void player_touch_present(MainObject *player, Present *present)
 {
     Mix_AllocateChannels(100);
-    if(present->get_is_on_screen() == true && check_collision_2_rect(player->get_rect(), present->get_rect()) == true)
+    if (present->get_is_on_screen() == true && check_collision_2_rect(player->get_rect(), present->get_rect()) == true)
     {
         player->processing_if_got_present(present);
         player->set_health(player->get_health() + 1);
@@ -164,7 +180,6 @@ int main(int argc, char *argv[])
 
     init_chicken_level_1(chicken);
     init_chicken_level_1_2(chicken2);
-
 
     present->set_is_on_screen(true);
     present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
@@ -204,39 +219,46 @@ int main(int argc, char *argv[])
         boss[i].set_clips();
         boss[i].set_rect_cordinate(900, 300);
     }
-    
+
     Mix_AllocateChannels(100);
     bool isRunning = true;
     bool isPause = false;
-    Mix_Music* theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
-    Mix_PlayMusic(theme_1, 0);
-    if(theme_1 == NULL)
+    bool player_hit_start = false;
+    Mix_Music *theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
+    if (theme_1 == NULL)
     {
         std::cout << Mix_GetError();
         exit(0);
     }
+    int count = 0;
+    if (menu->get_texture() == NULL)
+    {
+        std::cout << "Main.cpp lmao123";
+        exit(EXIT_FAILURE);
+    }
+    while (menu->get_game_has_started() == false)
+    {
+        menu->render_menu();
+        while (SDL_PollEvent(&event))
+        {
+            if (event.type == SDL_QUIT)
+            {
+                exit(EXIT_FAILURE);
+            }
+            if (event.type == SDL_KEYDOWN)
+            {
+                if (event.key.keysym.sym == SDLK_a)
+                {
+                    menu->set_game_has_started(true);
+                }
+            }
+        }
+        SDL_RenderPresent(renderer);
+        SDL_RenderClear(renderer);
+    }
+    Mix_PlayMusic(theme_1, 0);
     while (isRunning)
     {
-        Uint32 current_time = SDL_GetTicks();
-        if (player->get_health() <= 0)
-        {
-            isRunning = false;
-        }
-        if(current_time > last_time_present_fall_down >= 100 && present->get_is_on_screen() == false)
-        {
-            present->set_is_on_screen(true);
-            present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
-            present->set_kind_of_present(0);
-            last_time_present_fall_down = current_time;
-        }
-        
-        back_ground->render_background_scroll(renderer);
-        back_ground->update_background_scroll();
-        back_ground->set_speed(2);
-
-        present->render();
-        present->update();
-
         while (SDL_PollEvent(&event))
         {
             if (event.type == SDL_QUIT)
@@ -253,6 +275,25 @@ int main(int argc, char *argv[])
             player->handling_movement(event);
             player->handling_shooting(event);
         }
+        Uint32 current_time = SDL_GetTicks();
+        if (player->get_health() <= 0)
+        {
+            isRunning = false;
+        }
+        if ((current_time - last_time_present_fall_down) >= 10000 && present->get_is_on_screen() == false)
+        {
+            present->set_is_on_screen(true);
+            present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
+            present->set_kind_of_present(0);
+            last_time_present_fall_down = current_time;
+        }
+
+        back_ground->render_background_scroll(renderer);
+        back_ground->update_background_scroll();
+        back_ground->set_speed(2);
+
+        present->render();
+        present->update();
 
         if (level == 1)
         {
@@ -284,7 +325,7 @@ int main(int argc, char *argv[])
             {
                 level = 3;
             }
-            if(player->get_health() <= 0)
+            if (player->get_health() <= 0)
             {
                 isRunning = false;
             }
@@ -331,7 +372,6 @@ bool InitData()
         std::cerr << "Error initializing SDL: " << SDL_GetError() << std::endl;
         return false;
     }
-
 
     window = SDL_CreateWindow("Chicken Invaders", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, SCREEN_WIDTH, SCREEN_HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
