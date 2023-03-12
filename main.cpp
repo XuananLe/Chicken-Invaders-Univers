@@ -285,6 +285,12 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
 }
 int main(int argc, char *argv[])
 {
+    if (TTF_Init() < 0)
+    {
+        std::cerr << "Failed to initialize SDL2_ttf: " << TTF_GetError() << std::endl;
+        return 1;
+    }
+
     srand(time(NULL));
     init_menu(menu);
     init_back_ground(back_ground);
@@ -316,8 +322,9 @@ int main(int argc, char *argv[])
 
     theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
     Mix_PlayMusic(theme_1, 0);
+    level = 2;
 
-// ===============<LEVEL 1>================
+    // ===============<LEVEL 1>================
     while (level == 1)
     {
         common_process(player, present, event);
@@ -336,8 +343,14 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
+    while (true)
+    {
+        common_process(player, present, event);
+        menu->render_after_level_1();
+        update_game_state();
+    }
 
-// ===============<LEVEL 2>================
+    // ===============<LEVEL 2>================
     theme_1 = Mix_LoadMUS("res/sound/asteroid_level.mp3");
     Mix_VolumeMusic(30);
     Mix_PlayMusic(theme_1, 0);
@@ -356,7 +369,7 @@ int main(int argc, char *argv[])
         update_game_state();
     }
 
-// ===============<LEVEL 3>================
+    // ===============<LEVEL 3>================
 
     theme_1 = Mix_LoadMUS("res/sound/boss_theme.mp3");
     Mix_PlayMusic(theme_1, 0);

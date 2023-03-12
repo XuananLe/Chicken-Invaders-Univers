@@ -2,13 +2,17 @@
 #define MENU_H
 #include "CommonVariable.h"
 #include "BaseObject.h"
+#include "BackGround.h"
+class Background;
 class GameMenu
 {
 protected:
     SDL_Texture *menu_texture = NULL;
     SDL_Texture *after_level_1 = NULL;
     SDL_Texture *after_level_2 = NULL;
+    TTF_Font* transition_level = TTF_OpenFont("arial.ttf", 32);
     SDL_Rect menu_rect;
+    SDL_Rect after_level_1_rect;
     bool game_has_started;
 
 public:
