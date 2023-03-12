@@ -14,8 +14,8 @@ const int number_of_asteroid = 20;
 const int chicken_number = 30;
 bool player_want_to_play_again = false;
 const int boss_number = 2;
+int level = 1;
 bool InitData();
-
 GameMenu *menu = new GameMenu();
 Present *present = new Present();
 Asteroid *asteroid = new Asteroid[number_of_asteroid];
@@ -25,7 +25,6 @@ Chicken *chicken = new Chicken[chicken_number];
 Chicken *chicken2 = new Chicken[chicken_number];
 Boss *boss = new Boss[boss_number];
 Uint32 last_time_present_fall_down = SDL_GetTicks();
-int level = 1;
 int init_system()
 {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
@@ -263,7 +262,7 @@ void init_boss(Boss *boss)
     {
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
         boss[i].set_clips();
-        boss[i].set_rect_cordinate(100 * i , 100);
+        boss[i].set_rect_cordinate(100 * i, 100);
     }
 }
 void init_menu(GameMenu *menu)
@@ -274,7 +273,16 @@ void init_menu(GameMenu *menu)
         exit(EXIT_FAILURE);
     }
 }
-
+void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
+{
+    for (int i = 0; i < number_of_asteroid; i++)
+    {
+        asteroid[i].render_with_angle();
+        asteroid[i].moving_diagonal();
+        asteroid[i].spinning();
+        player->process_if_hit_by_asteroid(&asteroid[i]);
+    }
+}
 int main(int argc, char *argv[])
 {
     srand(time(NULL));
@@ -309,7 +317,7 @@ int main(int argc, char *argv[])
     theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
     Mix_PlayMusic(theme_1, 0);
 
-    level = 3;
+// ===============<LEVEL 1>================
     while (level == 1)
     {
         common_process(player, present, event);
@@ -328,19 +336,15 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
+
+// ===============<LEVEL 2>================
     theme_1 = Mix_LoadMUS("res/sound/asteroid_level.mp3");
     Mix_VolumeMusic(30);
     Mix_PlayMusic(theme_1, 0);
     while (level == 2)
     {
         common_process(player, present, event);
-        for (int i = 0; i < number_of_asteroid; i++)
-        {
-            asteroid[i].render_with_angle();
-            asteroid[i].moving_diagonal();
-            asteroid[i].spinning();
-            player->process_if_hit_by_asteroid(&asteroid[i]);
-        }
+        process_astroid_vs_player(asteroid, player);
         if (all_level_2_asteroid_dead(asteroid) == true)
         {
             level = 3;
@@ -351,6 +355,9 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
+
+// ===============<LEVEL 3>================
+
     theme_1 = Mix_LoadMUS("res/sound/boss_theme.mp3");
     Mix_PlayMusic(theme_1, 0);
     while (level == 3)

@@ -16,6 +16,7 @@ extern const int SCREEN_HEIGHT;
 extern SDL_Window *window;
 extern SDL_Renderer *renderer;
 extern SDL_Event event;
+extern TTF_Font *font;
 extern const int MIDDLE_X;
 extern const int MIDDLE_Y;
 extern bool check_collision_2_rect(const SDL_Rect &a, const SDL_Rect &b);
