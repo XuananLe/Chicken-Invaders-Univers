@@ -372,7 +372,6 @@ void intro_before_level(int level)
     }
 }
 
-
 // ==================== MAIN ====================
 int main(int argc, char *argv[])
 {
@@ -392,6 +391,7 @@ int main(int argc, char *argv[])
     init_player(player);
     init_boss(boss);
 
+    // =================<MENU>================
     Mix_AllocateChannels(100);
     play_music_level(level, background_music);
 
@@ -435,7 +435,8 @@ int main(int argc, char *argv[])
     }
     // ===============<LEVEL 2>================
 
-    level = 2;
+    level++;
+
     play_music_level(level, background_music);
 
     while (level == 2)
@@ -455,7 +456,7 @@ int main(int argc, char *argv[])
 
     // ===============<LEVEL 3>================
 
-    level = 3;
+    level++;
     play_music_level(level, background_music);
 
     while (level == 3)
