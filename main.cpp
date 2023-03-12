@@ -308,7 +308,7 @@ int main(int argc, char *argv[])
             {
                 exit(EXIT_FAILURE);
             }
-            menu->process_input(event);
+            menu->process_input_menu(event);
         }
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
