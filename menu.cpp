@@ -10,19 +10,24 @@ GameMenu::GameMenu()
     }
     game_has_started = false;
     menu_rect.x = 0;
-    font = TTF_OpenFont("res/font/RopaSans-Italic.ttf", 100);
+    transition_level = TTF_OpenFont("res/font/RopaSans-Italic.ttf", 100);
+    if(transition_level == NULL)
+    {
+        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
+        exit(EXIT_FAILURE);
+    }
     // Set font hinting mode to TTF_HINTING_NORMAL
-    TTF_SetFontHinting(font, TTF_HINTING_NORMAL);
+    TTF_SetFontHinting(transition_level, TTF_HINTING_NORMAL);
     // Enable font kerning
-    TTF_SetFontKerning(font, 1);
+    TTF_SetFontKerning(transition_level, 1);
     menu_rect.y = 0;
     menu_rect.w = SCREEN_WIDTH;
     menu_rect.h = SCREEN_HEIGHT;
-    after_level_1 = NULL;
-    after_level_1_rect.w = 800;
-    after_level_1_rect.h = 200;
-    after_level_1_rect.x = SCREEN_WIDTH / 2 - after_level_1_rect.w / 2;
-    after_level_1_rect.y = SCREEN_HEIGHT / 2 - after_level_1_rect.h / 2;
+    before_level_texture = NULL;
+    before_level.w = 800;
+    before_level.h = 200;
+    before_level.x = SCREEN_WIDTH / 2 - before_level.w / 2;
+    before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2;
 }
 GameMenu::~GameMenu()
 {
@@ -49,15 +54,28 @@ void GameMenu::process_input_menu(SDL_Event &event)
         }
     }
 }
-void GameMenu::render_after_level_1()
+void GameMenu::render_before_level(int level)
 {
+    std::string message;
     SDL_Color color = {102,102, 225};
-    SDL_Surface *surface = TTF_RenderText_Solid(font, "WELCOME TO LEVEL 1", color);
-    SDL_Surface *blurred_surface = SDL_CreateRGBSurface(0, after_level_1_rect.w, after_level_1_rect.h, 32, 0, 0, 0, 0);
-    SDL_Rect rect = {0, 0, after_level_1_rect.w, after_level_1_rect.h};
+    if(level == 1)
+    {
+        message = "GET READY FOR THE EGGS";
+    }
+    else if(level == 2)
+    {
+        message = "WATCHOUT FOR THE ASTEROID RAIN";
+    }
+    else if(level == 3)
+    {
+        message = "WELCOME TO FINAL LEVEL";
+    }
+    SDL_Surface *surface = TTF_RenderText_Solid(transition_level,message.c_str(), color);
+    SDL_Surface *blurred_surface = SDL_CreateRGBSurface(0, before_level.w, before_level.h, 32, 0, 0, 0, 0);
+    SDL_Rect rect = {0, 0, before_level.w, before_level.h};
     SDL_BlitSurface(surface, &rect, blurred_surface, &rect);
 
-    if (font == NULL)
+    if (transition_level == NULL)
     {
         std::cout << "Error at file menu.cpp " << TTF_GetError() << std::endl;
     }
@@ -67,22 +85,13 @@ void GameMenu::render_after_level_1()
         std::cout << "WHAT THE FUCK" << std::endl;
         exit(EXIT_FAILURE);
     }
-    after_level_1 = SDL_CreateTextureFromSurface(renderer, surface);
-    if (after_level_1 == NULL)
+    before_level_texture = SDL_CreateTextureFromSurface(renderer, surface);
+    if (before_level_texture == NULL)
     {
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
     SDL_FreeSurface(surface);
-    SDL_RenderCopy(renderer, after_level_1, NULL, &after_level_1_rect);
+    SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
 }
-void GameMenu::render_after_level_2()
-{
-    after_level_2 = IMG_LoadTexture(renderer, "res/image/after_level_2.png");
-    if (after_level_2 == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    SDL_RenderCopy(renderer, after_level_2, NULL, &menu_rect);
-}
+

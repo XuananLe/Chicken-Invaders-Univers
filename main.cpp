@@ -14,7 +14,8 @@ const int number_of_asteroid = 20;
 const int chicken_number = 30;
 bool player_want_to_play_again = false;
 const int boss_number = 2;
-int level = 1;
+Mix_Music *background_music = NULL;
+int level = 0;
 bool InitData();
 GameMenu *menu = new GameMenu();
 Present *present = new Present();
@@ -216,7 +217,49 @@ void player_touch_present(MainObject *player, Present *present)
         present->set_is_on_screen(false);
     }
 }
-
+void play_music_level(int level, Mix_Music *music)
+{
+    if (level == 0)
+    {
+        music = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
+        if (music == NULL)
+        {
+            std::cout << "Music is not loaded" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        Mix_PlayMusic(music, -1);
+    }
+    if (level == 1)
+    {
+        music = Mix_LoadMUS("res/sound/level_1_theme.mp3");
+        if (music == NULL)
+        {
+            std::cout << "Music is not loaded" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        Mix_PlayMusic(music, -1);
+    }
+    if (level == 2)
+    {
+        music = Mix_LoadMUS("res/sound/asteroid_level.mp3");
+        if (music == NULL)
+        {
+            std::cout << "Music is not loaded" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        Mix_PlayMusic(music, -1);
+    }
+    if (level == 3)
+    {
+        music = Mix_LoadMUS("res/sound/boss_theme.mp3");
+        if (music == NULL)
+        {
+            std::cout << "Music is not loaded" << std::endl;
+            exit(EXIT_FAILURE);
+        }
+        Mix_PlayMusic(music, -1);
+    }
+}
 void common_process(MainObject *player, Present *present, SDL_Event &event)
 {
     while (SDL_PollEvent(&event))
@@ -283,6 +326,19 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
         player->process_if_hit_by_asteroid(&asteroid[i]);
     }
 }
+void intro_before_level(int level)
+{
+    Uint32 current_time = SDL_GetTicks();
+    Uint32 last_time = current_time;
+    while (last_time - current_time <= 5000)
+    {
+        last_time = SDL_GetTicks();
+        common_process(player, present, event);
+        menu->render_before_level(level);
+        update_game_state();
+    }
+}
+
 int main(int argc, char *argv[])
 {
     if (TTF_Init() < 0)
@@ -302,8 +358,7 @@ int main(int argc, char *argv[])
     init_boss(boss);
 
     Mix_AllocateChannels(100);
-    Mix_Music *theme_1 = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
-    Mix_PlayMusic(theme_1, 0);
+    play_music_level(level, background_music);
 
     while (menu->get_game_has_started() == false)
     {
@@ -320,11 +375,11 @@ int main(int argc, char *argv[])
         SDL_RenderClear(renderer);
     }
 
-    theme_1 = Mix_LoadMUS("res/sound/level_1_theme.mp3");
-    Mix_PlayMusic(theme_1, 0);
-    level = 2;
-
     // ===============<LEVEL 1>================
+    level = 1;
+    play_music_level(level, background_music);
+    intro_before_level(level);
+
     while (level == 1)
     {
         common_process(player, present, event);
@@ -343,17 +398,11 @@ int main(int argc, char *argv[])
         }
         update_game_state();
     }
-    while (true)
-    {
-        common_process(player, present, event);
-        menu->render_after_level_1();
-        update_game_state();
-    }
-
     // ===============<LEVEL 2>================
-    theme_1 = Mix_LoadMUS("res/sound/asteroid_level.mp3");
-    Mix_VolumeMusic(30);
-    Mix_PlayMusic(theme_1, 0);
+
+    level = 2;
+    play_music_level(level, background_music);
+
     while (level == 2)
     {
         common_process(player, present, event);
@@ -371,8 +420,9 @@ int main(int argc, char *argv[])
 
     // ===============<LEVEL 3>================
 
-    theme_1 = Mix_LoadMUS("res/sound/boss_theme.mp3");
-    Mix_PlayMusic(theme_1, 0);
+    level = 3;
+    play_music_level(level, background_music);
+
     while (level == 3)
     {
         common_process(player, present, event);
