@@ -64,7 +64,7 @@ void GameMenu::render_before_level(int level)
     }
     else if(level == 2)
     {
-        message = "WATCHOUT FOR THE ASTEROID RAIN";
+        message = "WATCH OUT FOR THE ASTEROID RAIN";
     }
     else if(level == 3)
     {

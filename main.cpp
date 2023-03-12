@@ -13,19 +13,34 @@ const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
 const int chicken_number = 30;
 bool player_want_to_play_again = false;
-const int boss_number = 2;
-Mix_Music *background_music = NULL;
 int level = 0;
+const int boss_number = 2;
+Uint64 SCORE = SDL_GetTicks();
+Mix_Music *background_music = NULL;
+
+// ======================= Enity Variable =======================
 bool InitData();
+
 GameMenu *menu = new GameMenu();
+
 Present *present = new Present();
+
 Asteroid *asteroid = new Asteroid[number_of_asteroid];
+
 BackGround *back_ground = new BackGround();
+
 MainObject *player = new MainObject();
+
 Chicken *chicken = new Chicken[chicken_number];
+
 Chicken *chicken2 = new Chicken[chicken_number];
+
 Boss *boss = new Boss[boss_number];
+
 Uint32 last_time_present_fall_down = SDL_GetTicks();
+
+// ======================= Init function =======================
+
 int init_system()
 {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) < 0)
@@ -48,17 +63,20 @@ int init_system()
     }
     return 0;
 }
+
 void init_player(MainObject *player)
 {
     player->load_animation_sprite(renderer, "res/image/ship.png");
     player->set_clips();
     player->set_rect_cordinate(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2);
 }
+
 void init_back_ground(BackGround *back_ground)
 {
     back_ground->loading_background(renderer, "res/image/background(2).jpg");
     back_ground->set_speed(1);
 }
+
 void init_asteroid(Asteroid *asteroid)
 {
     for (int i = 0; i < number_of_asteroid; i++)
@@ -68,12 +86,14 @@ void init_asteroid(Asteroid *asteroid)
         asteroid[i].set_speed(2);
     }
 }
+
 void init_random_present(Present *present)
 {
     present->set_is_on_screen(true);
     present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
     present->set_kind_of_present(0);
 }
+
 bool all_level_1_chicken_dead(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number; i++)
@@ -85,6 +105,7 @@ bool all_level_1_chicken_dead(Chicken *chicken)
     }
     return true;
 }
+
 bool all_level_1_2_chicken_dead(Chicken *chicken2)
 {
     for (int i = 0; i < chicken_number; i++)
@@ -94,6 +115,7 @@ bool all_level_1_2_chicken_dead(Chicken *chicken2)
     }
     return true;
 }
+
 bool all_level_2_asteroid_dead(Asteroid *asteroid)
 {
     for (int i = 0; i < number_of_asteroid; i++)
@@ -105,6 +127,7 @@ bool all_level_2_asteroid_dead(Asteroid *asteroid)
     }
     return true;
 }
+
 bool all_boss_dead(Boss *boss)
 {
     for (int i = 0; i < boss_number; i++)
@@ -116,6 +139,7 @@ bool all_boss_dead(Boss *boss)
     }
     return true;
 }
+
 void init_chicken_level_1(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number / 3; i++)
@@ -164,6 +188,7 @@ void init_chicken_level_1(Chicken *chicken)
         }
     }
 }
+
 void init_chicken_level_1_2(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number; i++)
@@ -182,11 +207,13 @@ void init_chicken_level_1_2(Chicken *chicken)
         }
     }
 }
+
 void update_game_state()
 {
     SDL_RenderPresent(renderer);
     SDL_RenderClear(renderer);
 }
+
 void process_chicken_vs_player(Chicken *chicken, MainObject *player)
 {
     for (int i = 0; i < chicken_number; i++)
@@ -207,6 +234,7 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
         player->process_if_eat_wing_rect(&chicken[i]);
     }
 }
+
 void player_touch_present(MainObject *player, Present *present)
 {
     Mix_AllocateChannels(100);
@@ -217,6 +245,7 @@ void player_touch_present(MainObject *player, Present *present)
         present->set_is_on_screen(false);
     }
 }
+
 void play_music_level(int level, Mix_Music *music)
 {
     if (level == 0)
@@ -260,6 +289,7 @@ void play_music_level(int level, Mix_Music *music)
         Mix_PlayMusic(music, -1);
     }
 }
+
 void common_process(MainObject *player, Present *present, SDL_Event &event)
 {
     while (SDL_PollEvent(&event))
@@ -308,6 +338,7 @@ void init_boss(Boss *boss)
         boss[i].set_rect_cordinate(100 * i, 100);
     }
 }
+
 void init_menu(GameMenu *menu)
 {
     if (menu->get_texture() == NULL)
@@ -316,6 +347,7 @@ void init_menu(GameMenu *menu)
         exit(EXIT_FAILURE);
     }
 }
+
 void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
 {
     for (int i = 0; i < number_of_asteroid; i++)
@@ -326,6 +358,7 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
         player->process_if_hit_by_asteroid(&asteroid[i]);
     }
 }
+
 void intro_before_level(int level)
 {
     Uint32 current_time = SDL_GetTicks();
@@ -339,6 +372,8 @@ void intro_before_level(int level)
     }
 }
 
+
+// ==================== MAIN ====================
 int main(int argc, char *argv[])
 {
     if (TTF_Init() < 0)
