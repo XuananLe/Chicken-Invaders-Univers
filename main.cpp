@@ -13,6 +13,7 @@ const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
 const int chicken_number = 30;
 bool player_want_to_play_again = false;
+bool game_is_truly_end = false;
 int level = 0;
 const int boss_number = 2;
 Uint64 SCORE = SDL_GetTicks();
@@ -357,8 +358,7 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
         asteroid[i].spinning();
         player->process_if_hit_by_asteroid(&asteroid[i]);
     }
-}
-
+}// 
 void intro_before_level(int level)
 {
     Uint32 current_time = SDL_GetTicks();
@@ -436,7 +436,7 @@ int main(int argc, char *argv[])
     // ===============<LEVEL 2>================
 
     level++;
-
+    level = 2;
     play_music_level(level, background_music);
 
     while (level == 2)
@@ -449,7 +449,7 @@ int main(int argc, char *argv[])
         }
         if (player->get_health() <= 0)
         {
-            exit(EXIT_SUCCESS);
+            exit(EXIT_SUCCESS); 
         }
         update_game_state();
     }
@@ -525,3 +525,6 @@ bool InitData()
 
     return true;
 }
+/*
+
+*/

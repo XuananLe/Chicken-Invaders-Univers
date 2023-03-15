@@ -11,7 +11,7 @@ GameMenu::GameMenu()
     game_has_started = false;
     menu_rect.x = 0;
     transition_level = TTF_OpenFont("res/font/RopaSans-Italic.ttf", 100);
-    if(transition_level == NULL)
+    if (transition_level == NULL)
     {
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
@@ -39,6 +39,16 @@ void GameMenu::render_menu()
 }
 void GameMenu::process_input_menu(SDL_Event &event)
 {
+    if (event.type == SDL_QUIT)
+    {
+        exit(EXIT_SUCCESS);
+    }
+    if (event.type == SDL_MOUSEMOTION)
+    {
+        int x = 0, y = 0;
+        SDL_GetMouseState(&x, &y);
+        std::cout << x << " " << y << std::endl;
+    }
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         int x = 0, y = 0;
@@ -51,26 +61,33 @@ void GameMenu::process_input_menu(SDL_Event &event)
         if (x >= 1830 && x <= 1913 && y >= 8 && y <= 90)
         {
             exit(EXIT_SUCCESS);
+            return;
+        }
+        if (1 <= x && x <= 390 && y >= 47 && y <= 90)
+        {
+            const std::string url = "https://github.com/XuananLe/";
+            const std::string cmd = "xdg-open " + url;
+            system(cmd.c_str());
         }
     }
 }
 void GameMenu::render_before_level(int level)
 {
     std::string message;
-    SDL_Color color = {102,102, 225};
-    if(level == 1)
+    SDL_Color color = {102, 102, 225};
+    if (level == 1)
     {
         message = "GET READY FOR THE EGGS";
     }
-    else if(level == 2)
+    else if (level == 2)
     {
         message = "WATCH OUT FOR THE ASTEROID RAIN";
     }
-    else if(level == 3)
+    else if (level == 3)
     {
         message = "WELCOME TO FINAL LEVEL";
     }
-    SDL_Surface *surface = TTF_RenderText_Solid(transition_level,message.c_str(), color);
+    SDL_Surface *surface = TTF_RenderText_Solid(transition_level, message.c_str(), color);
     SDL_Surface *blurred_surface = SDL_CreateRGBSurface(0, before_level.w, before_level.h, 32, 0, 0, 0, 0);
     SDL_Rect rect = {0, 0, before_level.w, before_level.h};
     SDL_BlitSurface(surface, &rect, blurred_surface, &rect);
@@ -94,4 +111,3 @@ void GameMenu::render_before_level(int level)
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
 }
-

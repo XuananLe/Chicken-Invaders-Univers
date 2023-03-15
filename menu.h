@@ -2,6 +2,7 @@
 #define MENU_H
 #include "CommonVariable.h"
 #include "BaseObject.h"
+#include <unistd.h>
 #include "BackGround.h"
 class Background;
 class GameMenu
