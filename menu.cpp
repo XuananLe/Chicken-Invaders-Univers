@@ -65,7 +65,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
         }
         if (1 <= x && x <= 390 && y >= 47 && y <= 90)
         {
-            const std::string url = "https://github.com/XuananLe/";
+            const std::string url = "https://xuananle.github.io/demowebpage/";
             const std::string cmd = "xdg-open " + url;
             system(cmd.c_str());
         }
