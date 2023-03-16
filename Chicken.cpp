@@ -306,7 +306,7 @@ void Chicken::generate_present()
     }
     if (health_ != 0 && has_present == 1)
     {
-        present->set_kind_of_present(rand() % 3 + 0);
+        present->set_kind_of_present(2);
         present->set_rect_cordinate(rect_.x + rect_.w / 2, rect_.y + rect_.h / 2);
         return;
     }

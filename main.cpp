@@ -11,7 +11,7 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
-const int chicken_number = 30;
+const int chicken_number = 4;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
 int level = 0;
@@ -358,7 +358,7 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
         asteroid[i].spinning();
         player->process_if_hit_by_asteroid(&asteroid[i]);
     }
-}// 
+} //
 void intro_before_level(int level)
 {
     Uint32 current_time = SDL_GetTicks();
@@ -431,6 +431,7 @@ int main(int argc, char *argv[])
         {
             exit(EXIT_SUCCESS);
         }
+        menu->render_health_bar(player);
         update_game_state();
     }
     // ===============<LEVEL 2>================
@@ -449,8 +450,9 @@ int main(int argc, char *argv[])
         }
         if (player->get_health() <= 0)
         {
-            exit(EXIT_SUCCESS); 
+            exit(EXIT_SUCCESS);
         }
+        menu->render_health_bar(player);
         update_game_state();
     }
 
@@ -477,6 +479,7 @@ int main(int argc, char *argv[])
             std::cout << "player_is_dead";
             exit(EXIT_SUCCESS);
         }
+        menu->render_health_bar(player);
         update_game_state();
     }
     // FREEING METHOD AND QUITTING

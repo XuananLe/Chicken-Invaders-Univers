@@ -35,6 +35,7 @@ Mix_Chunk* shoot_sound;
 Mix_Chunk* eat_wing_sound;
 Mix_Chunk* hit_sound;
 Mix_Chunk* getting_present_sound;
+int number_of_wings = 0;
 int health;
 bool got_hit;
 int ammo_level = 0;
@@ -95,6 +96,9 @@ int get_health() const{return health;}
 void  set_health(const int &health) {this -> health = health;}
 // Free the texture
 void free();
+
+int get_num_of_wings() const {return number_of_wings;}
+void set_num_of_wings(const int &num_of_wings){number_of_wings = num_of_wings;}
 
 
 };

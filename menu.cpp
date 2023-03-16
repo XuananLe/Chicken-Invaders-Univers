@@ -28,6 +28,24 @@ GameMenu::GameMenu()
     before_level.h = 200;
     before_level.x = SCREEN_WIDTH / 2 - before_level.w / 2;
     before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2;
+
+    health_bar_texture= IMG_LoadTexture(renderer, "res/image/hp_bar.png");
+    if (health_bar_texture == NULL)
+    {
+        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
+        exit(EXIT_FAILURE);
+    }
+    health_bar.w = 300;
+    health_bar.h = 30;
+    health_bar.x = 0;
+    health_bar.y = SCREEN_HEIGHT - health_bar.h;
+
+    new_font = TTF_OpenFont("res/font/arial.ttf", 100);
+    if (new_font == NULL)
+    {
+        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
+        exit(EXIT_FAILURE);
+    }
 }
 GameMenu::~GameMenu()
 {
@@ -36,6 +54,23 @@ GameMenu::~GameMenu()
 void GameMenu::render_menu()
 {
     SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
+}
+void GameMenu::render_health_bar(MainObject* player)
+{
+    if(player->get_health() <= 0) return;
+    color = {255, 0, 0}; // red
+    SDL_Surface* wings_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_num_of_wings()).c_str(), color);
+    SDL_Texture* wings_texture__ = SDL_CreateTextureFromSurface(renderer, wings_text);
+    SDL_Rect wings_render_rect = {65,1048,40, 30};
+
+    SDL_Surface* health_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_health()).c_str(), color);
+    SDL_Texture* health_texture = SDL_CreateTextureFromSurface(renderer, health_text);
+    SDL_Rect health_render_rect = {212, 1051, 35, 30};
+
+    SDL_RenderCopy(renderer, health_texture, NULL, &health_render_rect);
+    SDL_RenderCopy(renderer, wings_texture__, NULL, &wings_render_rect);
+    SDL_RenderCopy(renderer, health_bar_texture, NULL, &health_bar);
+    color = {102, 102, 225}; // blue
 }
 void GameMenu::process_input_menu(SDL_Event &event)
 {
@@ -74,7 +109,6 @@ void GameMenu::process_input_menu(SDL_Event &event)
 void GameMenu::render_before_level(int level)
 {
     std::string message;
-    SDL_Color color = {102, 102, 225};
     if (level == 1)
     {
         message = "GET READY FOR THE EGGS";

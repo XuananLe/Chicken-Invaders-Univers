@@ -2,18 +2,25 @@
 #define MENU_H
 #include "CommonVariable.h"
 #include "BaseObject.h"
+#include "MainObject.h"
 #include <unistd.h>
 #include "BackGround.h"
 class Background;
+class MainObject;
 class GameMenu
 {
 protected:
     SDL_Texture *menu_texture = NULL;
     SDL_Texture *before_level_texture = NULL;
+    SDL_Texture *health_bar_texture = NULL;
     TTF_Font* transition_level = NULL;
-    SDL_Rect menu_rect;
+    SDL_Rect menu_rect;    
+    SDL_Color color = {102, 102, 225}; // blue
+    SDL_Rect health_bar;    
     SDL_Rect before_level;
+    TTF_Font* new_font = TTF_OpenFont("res/font/arial.ttf", 100);
     bool game_has_started;
+    SDL_Color color = {102, 102, 225};
 
 public:
     GameMenu();
@@ -24,5 +31,6 @@ public:
     void render_before_level(int level);
     void set_game_has_started(const bool & state){game_has_started = state;}
     void render_menu();
+    void render_health_bar(MainObject* player);
 };
 #endif

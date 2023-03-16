@@ -108,6 +108,9 @@ void MainObject::handling_movement(SDL_Event &event)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
+        int abc1 = 0, abc2 = 0;
+        SDL_GetMouseState(&abc1, &abc2);
+        std::cout << abc1 << " " << abc2 << std::endl;
         int cursor_x = event.motion.x;
         int cursor_y = event.motion.y;
 
@@ -214,8 +217,15 @@ void MainObject::handling_shooting(SDL_Event &event)
                 std::cout << "INVALID AMMO TYPE" << std::endl;
                 exit(0);
             }
-            std::string path_ammo = path + ammo_type_123 + std::to_string(ammo_level) + ".png";
+            std::string path_ammo = path + ammo_type_123 + 
+            std::to_string(ammo_level) + ".png";
             ammo->load_static_ammo_picture(renderer, path_ammo.c_str());
+            if(ammo->get_texture() == NULL)
+            {
+                std::cout << "ERROR: " << SDL_GetError() << std::endl;
+                std::cout << IMG_GetError() << std::endl;
+                exit(0);
+            }
             ammo->set_alive(true);
             ammo->set_can_move(true);
             ammo->set_rect_cordinate(rect_.x + rect_.w / 2 - 10, rect_.y);
@@ -230,8 +240,8 @@ void MainObject::handling_shooting(SDL_Event &event)
         {
             // TO DO
         }
-        else
-            return;
+        else return;
+            
     }
     else
         return;
@@ -291,9 +301,11 @@ void MainObject::process_shooting_if_hit_chicken(Chicken *chicken)
 void MainObject::process_if_eat_wing_rect(Chicken *chicken)
 {
     if (health <= 0)
-        return;
+        return; 
     if ((chicken->get_health() == 0) && (check_collision_2_rect(chicken->get_wing_rect(), rect_)) == true && (chicken->get_on_screen() == true))
     {
+        MainObject::number_of_wings += 1;
+        std::cout << "MainObject::number_of_wings = " << MainObject::number_of_wings << std::endl;
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, eat_wing_sound, 0, 1000);
         chicken->set_on_screen(false);
