@@ -19,9 +19,11 @@ protected:
     SDL_Rect health_bar;    
     SDL_Rect before_level;
     TTF_Font* new_font = TTF_OpenFont("res/font/arial.ttf", 100);
+    Uint32 last_time = SDL_GetTicks();
+    Uint32 start_time = last_time;
+    Uint32 elapsed_time = 0;
     bool game_has_started;
-    SDL_Color color = {102, 102, 225};
-
+    char time_text[16];
 public:
     GameMenu();
     SDL_Texture* get_texture() const {return menu_texture;}
@@ -32,5 +34,6 @@ public:
     void set_game_has_started(const bool & state){game_has_started = state;}
     void render_menu();
     void render_health_bar(MainObject* player);
+    void render_time();
 };
 #endif

@@ -29,7 +29,7 @@ GameMenu::GameMenu()
     before_level.x = SCREEN_WIDTH / 2 - before_level.w / 2;
     before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2;
 
-    health_bar_texture= IMG_LoadTexture(renderer, "res/image/hp_bar.png");
+    health_bar_texture = IMG_LoadTexture(renderer, "res/image/hp_bar.png");
     if (health_bar_texture == NULL)
     {
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
@@ -55,16 +55,17 @@ void GameMenu::render_menu()
 {
     SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
 }
-void GameMenu::render_health_bar(MainObject* player)
+void GameMenu::render_health_bar(MainObject *player)
 {
-    if(player->get_health() <= 0) return;
+    if (player->get_health() <= 0)
+        return;
     color = {255, 0, 0}; // red
-    SDL_Surface* wings_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_num_of_wings()).c_str(), color);
-    SDL_Texture* wings_texture__ = SDL_CreateTextureFromSurface(renderer, wings_text);
-    SDL_Rect wings_render_rect = {65,1048,40, 30};
+    SDL_Surface *wings_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_num_of_wings()).c_str(), color);
+    SDL_Texture *wings_texture__ = SDL_CreateTextureFromSurface(renderer, wings_text);
+    SDL_Rect wings_render_rect = {65, 1048, 40, 30};
 
-    SDL_Surface* health_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_health()).c_str(), color);
-    SDL_Texture* health_texture = SDL_CreateTextureFromSurface(renderer, health_text);
+    SDL_Surface *health_text = TTF_RenderText_Solid(new_font, std::to_string(player->get_health()).c_str(), color);
+    SDL_Texture *health_texture = SDL_CreateTextureFromSurface(renderer, health_text);
     SDL_Rect health_render_rect = {212, 1051, 35, 30};
 
     SDL_RenderCopy(renderer, health_texture, NULL, &health_render_rect);
@@ -144,4 +145,18 @@ void GameMenu::render_before_level(int level)
     }
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
+}
+void GameMenu::render_time()
+{
+    last_time = start_time;
+    start_time = SDL_GetTicks();
+    elapsed_time = start_time - last_time;
+    int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
+    int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
+    sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
+    SDL_Color color = {255,0,0, 255};
+    SDL_Surface *surface = TTF_RenderText_Solid(GameMenu::new_font, time_text, color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Rect dstrect = {10, 10, 60, 60};
+    SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 }

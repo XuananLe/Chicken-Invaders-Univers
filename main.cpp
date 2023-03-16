@@ -432,6 +432,7 @@ int main(int argc, char *argv[])
             exit(EXIT_SUCCESS);
         }
         menu->render_health_bar(player);
+        menu->render_time();
         update_game_state();
     }
     // ===============<LEVEL 2>================
@@ -452,6 +453,7 @@ int main(int argc, char *argv[])
         {
             exit(EXIT_SUCCESS);
         }
+        menu->render_time();
         menu->render_health_bar(player);
         update_game_state();
     }
