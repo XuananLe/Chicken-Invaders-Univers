@@ -12,6 +12,7 @@ const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
 const int chicken_number = 4;
+bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
 int level = 0;
@@ -212,11 +213,14 @@ void init_chicken_level_1_2(Chicken *chicken)
 void update_game_state()
 {
     SDL_RenderPresent(renderer);
-    SDL_RenderClear(renderer);
+    if (is_paused == false)
+        SDL_RenderClear(renderer);
 }
 
 void process_chicken_vs_player(Chicken *chicken, MainObject *player)
 {
+    if (is_paused == true)
+        return;
     for (int i = 0; i < chicken_number; i++)
     {
         chicken[i].render_animation(renderer, 1.55);
@@ -238,6 +242,8 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
 
 void player_touch_present(MainObject *player, Present *present)
 {
+    if (is_paused == true)
+        return;
     Mix_AllocateChannels(100);
     if (present->get_is_on_screen() == true && check_collision_2_rect(player->get_rect(), present->get_rect()) == true)
     {
@@ -249,6 +255,8 @@ void player_touch_present(MainObject *player, Present *present)
 
 void play_music_level(int level, Mix_Music *music)
 {
+    if (is_paused == true)
+        return;
     if (level == 0)
     {
         music = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
@@ -301,14 +309,23 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         }
         if (event.type == SDL_KEYDOWN)
         {
+            if (event.key.keysym.sym == SDLK_SPACE)
+            {
+                is_paused = !is_paused;
+            }
             if (event.key.keysym.sym == SDLK_ESCAPE)
             {
                 exit(EXIT_SUCCESS);
             }
         }
+        if (is_paused == true)
+            break;
         player->handling_movement(event);
         player->handling_shooting(event);
     }
+    if (is_paused == true)
+        return;
+
     Uint32 current_time = SDL_GetTicks();
     if ((current_time - last_time_present_fall_down) >= 10000 && present->get_is_on_screen() == false)
     {
@@ -332,6 +349,8 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
 void init_boss(Boss *boss)
 {
+    if (is_paused == true)
+        return;
     for (int i = 0; i < boss_number; i++)
     {
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
@@ -344,13 +363,14 @@ void init_menu(GameMenu *menu)
 {
     if (menu->get_texture() == NULL)
     {
-        std::cout << "Main.cpp lmao123";
         exit(EXIT_FAILURE);
     }
 }
 
 void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
 {
+    if (is_paused == true)
+        return;
     for (int i = 0; i < number_of_asteroid; i++)
     {
         asteroid[i].render_with_angle();
@@ -431,8 +451,14 @@ int main(int argc, char *argv[])
         {
             exit(EXIT_SUCCESS);
         }
-        menu->render_health_bar(player);
-        menu->render_time();
+        if (menu != NULL)
+        {
+            if (is_paused == false)
+            {
+                menu->render_time();
+            }
+            menu->render_health_bar(player);
+        }
         update_game_state();
     }
     // ===============<LEVEL 2>================
@@ -453,7 +479,10 @@ int main(int argc, char *argv[])
         {
             exit(EXIT_SUCCESS);
         }
-        menu->render_time();
+        if (is_paused == false)
+        {
+            menu->render_time();
+        }
         menu->render_health_bar(player);
         update_game_state();
     }
@@ -480,6 +509,10 @@ int main(int argc, char *argv[])
         {
             std::cout << "player_is_dead";
             exit(EXIT_SUCCESS);
+        }
+        if (is_paused == false)
+        {
+            menu->render_time();
         }
         menu->render_health_bar(player);
         update_game_state();

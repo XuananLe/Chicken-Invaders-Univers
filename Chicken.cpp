@@ -45,8 +45,7 @@ Chicken::Chicken()
     rect_.y = 0;
     rect_.w = 75;
     rect_.h = 68;
-
-    has_present = 1; // 50% chance to have a present
+    has_present = (rand() % 100 + 1) < 0 ? true : false; 
     chicken_got_hit_sound = Mix_LoadWAV("res/sound/CHICKEN_GOT_HIT.wav");
     chicken_laying_eggs_sound = Mix_LoadWAV("res/sound/Laying_eggs.wav");
     eggs_get_destroyed_sound = Mix_LoadWAV("res/sound/Egg_Destroy.wav");
@@ -299,6 +298,10 @@ void Chicken::play_hit_sound()
 // PRESENT
 void Chicken::generate_present()
 {
+    if(present == NULL)
+    {
+        return;
+    }
     if(has_present == 0)
     {
         present = NULL;
