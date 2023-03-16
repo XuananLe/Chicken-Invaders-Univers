@@ -5,6 +5,7 @@ class Egg
 {
 protected:
     SDL_Texture* nice_egg;
+    Uint32 last_time_eggs_broken;
     SDL_Texture* broken_egg;
     bool is_broken; // a flag to indicate if the egg is broken
     SDL_Rect rect_;

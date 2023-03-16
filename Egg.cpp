@@ -8,6 +8,7 @@ Egg::Egg()
     rect_.y = 0;
     rect_.w = 32;
     rect_.h = 41;
+    last_time_eggs_broken = SDL_GetTicks();
     nice_egg = IMG_LoadTexture(renderer, "res/image/egg.png");
     broken_egg = IMG_LoadTexture(renderer, "res/image/egg2.png");
 }
@@ -51,22 +52,30 @@ SDL_Rect Egg::get_rect_width_height_with_scale(const double &scale) const
 // IMPLEMENTATION OF RENDER METHOD FOR EGG
 void Egg::render()
 {
-    if(alive_ == false) return;
+    if (alive_ == false)
+        return;
     if (is_broken == false)
     {
         SDL_RenderCopy(renderer, nice_egg, NULL, &rect_);
+        last_time_eggs_broken = SDL_GetTicks();
     }
     else
     {
+        Uint32 current_time = SDL_GetTicks();
+        if(current_time - last_time_eggs_broken <= 2000)
+        {
         SDL_RenderCopy(renderer, broken_egg, NULL, &rect_);
+        }
+        else alive_ = false;
     }
 }
 // IMPLEMENTATION OF UPDATE METHOD FOR EGG
 void Egg::update()
 {
-    if(alive_ == false) return;
-    if(is_broken == false)
-    rect_.y += speed_;
+    if (alive_ == false)
+        return;
+    if (is_broken == false)
+        rect_.y += speed_;
     if (rect_.y >= 1035)
     {
         rect_.w = 76;
@@ -77,10 +86,11 @@ void Egg::update()
 }
 void Egg::move_diagonally()
 {
-    if(is_broken == true) return;
+    if (is_broken == true)
+        return;
     rect_.x += v_x;
     rect_.y += v_y;
-    if(rect_.y >= 1035)
+    if (rect_.y >= 1035)
     {
         rect_.w = 76;
         rect_.h = 57;

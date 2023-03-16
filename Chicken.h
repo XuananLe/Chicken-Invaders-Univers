@@ -38,6 +38,8 @@ protected:
     int dir_y;
     Uint32 last_move_time_; // time since last move
     Uint32 last_egg_time_; // time since last egg was laid
+    Uint32 broken_egg_time_; // time since last egg was broken
+
 
     Mix_Chunk *chicken_got_hit_sound = NULL;
     Mix_Chunk *chicken_laying_eggs_sound = NULL;

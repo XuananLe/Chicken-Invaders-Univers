@@ -20,7 +20,7 @@ const int boss_number = 2;
 Uint64 SCORE = SDL_GetTicks();
 Mix_Music *background_music = NULL;
 
-// ======================= Enity Variable =======================
+// ======================= Enity Variable ======================= \\
 bool InitData();
 
 GameMenu *menu = new GameMenu();

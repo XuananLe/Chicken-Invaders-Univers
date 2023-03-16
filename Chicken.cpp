@@ -24,6 +24,7 @@ Chicken::Chicken()
 
     last_egg_time_ = 100;
     last_egg_time_ = SDL_GetTicks();
+    broken_egg_time_ = SDL_GetTicks();
 
     is_on_screen = true;
 
