@@ -22,9 +22,12 @@ Chicken::Chicken()
     type_ = 1;
     alive_ = true;
 
-    last_egg_time_ = 100;
+    has_wing = (rand() % 100 <= 70) ? true : false;
+    has_present = (rand() % 100 + 1) < 99 ? true : false;
+
     last_egg_time_ = SDL_GetTicks();
     broken_egg_time_ = SDL_GetTicks();
+    last_wing_time_ = SDL_GetTicks();
 
     is_on_screen = true;
 
@@ -46,7 +49,6 @@ Chicken::Chicken()
     rect_.y = 0;
     rect_.w = 75;
     rect_.h = 68;
-    has_present = (rand() % 100 + 1) < 0 ? true : false; 
     chicken_got_hit_sound = Mix_LoadWAV("res/sound/CHICKEN_GOT_HIT.wav");
     chicken_laying_eggs_sound = Mix_LoadWAV("res/sound/Laying_eggs.wav");
     eggs_get_destroyed_sound = Mix_LoadWAV("res/sound/Egg_Destroy.wav");
@@ -149,11 +151,23 @@ void Chicken::render_animation(SDL_Renderer *renderer, const double &scale)
         SDL_Rect destRect = {rect_.x, rect_.y, static_cast<int>(75 * scale), static_cast<int>(68 * scale)};
         wing_rect_.x = rect_.x;
         wing_rect_.y = rect_.y;
+        last_wing_time_ = SDL_GetTicks();
         // Render the current sprite
         SDL_RenderCopy(renderer, texture_, &frame_clip[CHICKEN_spriteIndex], &destRect);
     }
     else if (health_ <= 0)
     {
+        if (has_wing == false)
+            return;
+        Uint32 currentTicks = SDL_GetTicks();
+        if (currentTicks - last_wing_time_ > 6000)
+        {
+            has_wing = false;
+            wing_rect_.y = -9999;
+            wing_rect_.x = -9999;
+            speed_ = 0;
+            return;
+        }
         if (wing_rect_.y + 84 <= SCREEN_HEIGHT)
         {
             wing_rect_.y += wing_fall_speed_;
@@ -234,23 +248,21 @@ void Chicken::moving_like_a_circle()
 // HANDLE SHOOTING EGGS AT A RANDOM TIME
 void Chicken::handle_shooting_eggs(MainObject *main_object)
 {
-    if (health_ <= 0)
+    if (health_ <= 0 || !is_on_screen)
+    {
         return;
-    if (is_on_screen == false)
-        return;
-    // generate a random number between 1 and 100
+    }
 
-    // get current time
     Uint32 current_time = SDL_GetTicks();
-
-    // calculate time since last egg was laid
-    Uint32 time_since_last_egg = current_time - last_egg_time_;
+    if (current_time - last_egg_time_ < 2000)
+    { // Only lay egg every 5 seconds
+        return;
+    }
 
     int rand_num = rand() % 100 + 1;
-    int rand_sec = rand() % 10 + 5;
-    // only lay egg if enough time has elapsed and probability is met
-    if (rand_num <= 8 && (time_since_last_egg > rand_sec * 1000)) // 95% chance of laying egg and 2000ms between eggs
-    {
+    last_egg_time_ = current_time;
+    if (rand_num <= 50)
+    { // 95% chance of laying egg
         double dx = main_object->get_rect().x - rect_.x;
         double dy = main_object->get_rect().y - rect_.y;
         double distance = sqrt(dx * dx + dy * dy);
@@ -260,14 +272,12 @@ void Chicken::handle_shooting_eggs(MainObject *main_object)
         double egg_vx = egg_speed * unit_x;
         double egg_vy = egg_speed * unit_y;
         Egg *egg = new Egg();
-        Mix_AllocateChannels(100);
-        egg->set_rect_cordinate(Chicken::rect_.x + Chicken::rect_.w / 2, Chicken::rect_.y + Chicken::rect_.h / 2);
+        egg->set_rect_cordinate(rect_.x + rect_.w / 2, rect_.y + rect_.h / 2);
         egg->set_rect_width_and_height(32, 41);
         egg->set_v_x(egg_vx);
         egg->set_v_y(egg_vy);
-        Mix_PlayChannel(-1, chicken_laying_eggs_sound, 0);
         eggs_list.push_back(egg);
-        last_egg_time_ = current_time;
+        Mix_PlayChannel(-1, chicken_laying_eggs_sound, 0);
     }
 }
 
@@ -299,18 +309,18 @@ void Chicken::play_hit_sound()
 // PRESENT
 void Chicken::generate_present()
 {
-    if(present == NULL)
+    if (present == NULL)
     {
         return;
     }
-    if(has_present == 0)
+    if (has_present == 0)
     {
         present = NULL;
         return;
     }
     if (health_ != 0 && has_present == 1)
     {
-        present->set_kind_of_present(2);
+        present->set_kind_of_present(rand() % 5);
         present->set_rect_cordinate(rect_.x + rect_.w / 2, rect_.y + rect_.h / 2);
         return;
     }

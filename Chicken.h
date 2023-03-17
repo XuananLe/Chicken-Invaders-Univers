@@ -39,6 +39,8 @@ protected:
     Uint32 last_move_time_; // time since last move
     Uint32 last_egg_time_; // time since last egg was laid
     Uint32 broken_egg_time_; // time since last egg was broken
+    Uint32 last_wing_time_; // time since last wing was dropped
+    bool has_wing;
 
 
     Mix_Chunk *chicken_got_hit_sound = NULL;
@@ -61,6 +63,8 @@ public:
 
     // Setting the clips for the animation
     void set_clips();
+
+    bool get_has_wing() const { return has_wing; }
 
     void set_speed(const int &speed) { speed_ = speed; }
     int get_speed() const { return speed_; }

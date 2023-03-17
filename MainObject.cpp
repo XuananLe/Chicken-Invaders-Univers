@@ -302,10 +302,9 @@ void MainObject::process_if_eat_wing_rect(Chicken *chicken)
 {
     if (health <= 0)
         return; 
-    if ((chicken->get_health() == 0) && (check_collision_2_rect(chicken->get_wing_rect(), rect_)) == true && (chicken->get_on_screen() == true))
+    if ((chicken->get_health() == 0) && (check_collision_2_rect(chicken->get_wing_rect(), rect_)) == true && (chicken->get_on_screen() == true) && chicken->get_has_wing() == true)
     {
         MainObject::number_of_wings += 1;
-        std::cout << "MainObject::number_of_wings = " << MainObject::number_of_wings << std::endl;
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, eat_wing_sound, 0, 1000);
         chicken->set_on_screen(false);
