@@ -186,6 +186,31 @@ void Boss::firing_eggs(MainObject *main_object)
     Mix_PlayChannel(-1, shooting_egg_sound_, 0);
     egg_list.push_back(egg);
 }
+void Boss::firing_eggs()
+{
+    Uint32 current_time = SDL_GetTicks();
+    if (current_time - last_egg_firing_time <= 2000)
+    {
+        return;
+    }
+    double egg_speed = 10;
+    double angle_step = 2 * M_PI / 10;
+    for (int i = 0; i < 10; i++)
+    {
+        double angle = i * angle_step + (double)rand() / RAND_MAX * angle_step;
+        double unit_x = cos(angle);
+        double unit_y = sin(angle);
+        double bullet_vx = egg_speed * unit_x;
+        double bullet_vy = egg_speed * unit_y;
+        Egg *egg = new Egg();
+        egg->set_rect_cordinate(rect_.x + rect_.w / 2, rect_.y + rect_.h / 2);
+        egg->set_rect_width_and_height(32, 41);
+        egg->set_v_x(bullet_vx);
+        egg->set_v_y(bullet_vy);
+        egg_list.push_back(egg);
+    }
+    last_egg_firing_time = current_time;
+}
 
 void Boss::moving_toward_player(MainObject *main_object)
 {

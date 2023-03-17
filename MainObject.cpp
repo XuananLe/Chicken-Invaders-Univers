@@ -108,9 +108,7 @@ void MainObject::handling_movement(SDL_Event &event)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
-        int abc1 = 0, abc2 = 0;
-        SDL_GetMouseState(&abc1, &abc2);
-        std::cout << abc1 << " " << abc2 << std::endl;
+        
         int cursor_x = event.motion.x;
         int cursor_y = event.motion.y;
 
@@ -438,9 +436,7 @@ void MainObject::processing_if_got_present(Present *present)
         present->set_is_on_screen(false);
         if (present->get_kind_of_present() == 0)
         {
-            if (health < 3)
-                health = health + 1;
-            return;
+            std::cout << MainObject::health << std::endl;
         }
         else if (present->get_kind_of_present() == 2)
         {

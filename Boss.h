@@ -100,6 +100,7 @@ void move_randomly_up_down_left_right();
 void firing_eggs(MainObject* main_object);
 void moving_toward_player(MainObject * main_object);
 void moving_toward_player();
+void firing_eggs();
 
 
 void update_the_eggs()

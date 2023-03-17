@@ -11,7 +11,7 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
-const int chicken_number = 4;
+const int chicken_number = 30;
 bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
@@ -37,7 +37,7 @@ Chicken *chicken = new Chicken[chicken_number];
 
 Chicken *chicken2 = new Chicken[chicken_number];
 
-Boss *boss = new Boss[boss_number];
+Boss *boss = new Boss[1];
 
 Uint32 last_time_present_fall_down = SDL_GetTicks();
 
@@ -240,18 +240,7 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     }
 }
 
-void player_touch_present(MainObject *player, Present *present)
-{
-    if (is_paused == true)
-        return;
-    Mix_AllocateChannels(100);
-    if (present->get_is_on_screen() == true && check_collision_2_rect(player->get_rect(), present->get_rect()) == true)
-    {
-        player->processing_if_got_present(present);
-        player->set_health(player->get_health() + 1);
-        present->set_is_on_screen(false);
-    }
-}
+
 
 void play_music_level(int level, Mix_Music *music)
 {
@@ -342,7 +331,7 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     present->render();
     present->update();
 
-    player_touch_present(player, present);
+    player->processing_if_got_present(present);
     player->render_shooting();
     player->render_animation(renderer, MAIN_OBJECT_SCALE);
 }
@@ -388,6 +377,14 @@ void intro_before_level(int level)
         last_time = SDL_GetTicks();
         common_process(player, present, event);
         menu->render_before_level(level);
+        if (menu != NULL)
+        {
+            if (is_paused == false)
+            {
+                menu->render_time();
+            }
+            menu->render_health_bar(player);
+        }
         update_game_state();
     }
 }
@@ -431,7 +428,7 @@ int main(int argc, char *argv[])
     }
 
     // ===============<LEVEL 1>================
-    level = 1;
+    level = 3;
     play_music_level(level, background_music);
     intro_before_level(level);
 
@@ -490,6 +487,7 @@ int main(int argc, char *argv[])
     // ===============<LEVEL 3>================
 
     level++;
+    level = 3;
     play_music_level(level, background_music);
 
     while (level == 3)
@@ -498,8 +496,8 @@ int main(int argc, char *argv[])
         for (int i = 0; i < boss_number; i++)
         {
             boss[i].render_animation(renderer, 1);
-            boss[i].moving_toward_player(player);
-            boss[i].firing_eggs(player);
+            //boss[i].moving_toward_player(player);
+            boss[i].firing_eggs();
             boss[i].update_the_eggs();
             boss[i].render_the_eggs();
             player->processing_if_hit_by_boss(&boss[i]);
