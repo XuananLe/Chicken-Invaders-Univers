@@ -11,14 +11,14 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
-const int chicken_number = 30;
+const int chicken_number = 15;
 bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
 int level = 0;
 const int boss_number = 2;
 Uint64 SCORE = SDL_GetTicks();
-Mix_Music *background_music = NULL;
+Mix_Music *background_music     = NULL;
 
 // ======================= Enity Variable ======================= \\
 bool InitData();
@@ -37,7 +37,7 @@ Chicken *chicken = new Chicken[chicken_number];
 
 Chicken *chicken2 = new Chicken[chicken_number];
 
-Boss *boss = new Boss[1];
+Boss *boss = new Boss[boss_number];
 
 Uint32 last_time_present_fall_down = SDL_GetTicks();
 
@@ -240,8 +240,6 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     }
 }
 
-
-
 void play_music_level(int level, Mix_Music *music)
 {
     if (is_paused == true)
@@ -338,15 +336,15 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
 void init_boss(Boss *boss)
 {
-    if (is_paused == true)
-        return;
-    for (int i = 0; i < boss_number; i++)
-    {
-        boss[i].load_animation_sprite(renderer, "res/image/boss.png");
-        boss[i].set_clips();
-        boss[i].set_rect_cordinate(100 * i, 100);
-    }
+    if (is_paused == true) return;
+    boss[0].load_animation_sprite(renderer, "res/image/boss.png");
+    boss[0].set_clips();
+    boss[0].set_rect_cordinate(100, 100);
+    boss[1].load_animation_sprite(renderer, "res/image/boss.png");
+    boss[1].set_clips();
+    boss[1].set_rect_cordinate(SCREEN_WIDTH - 100, 100);
 }
+
 
 void init_menu(GameMenu *menu)
 {
@@ -389,6 +387,22 @@ void intro_before_level(int level)
     }
 }
 
+void process_boss_vs_player(Boss *boss, MainObject *player)
+{
+    if (is_paused == true)
+        return;
+    for (int i = 0; i < boss_number; i++)
+    {
+        boss[i].render_animation(renderer, 1);
+        boss[i].moving_toward_player(player);
+        boss[i].firing_eggs();
+        boss[i].update_the_eggs();
+        boss[i].render_the_eggs();
+        player->processing_if_hit_by_boss(&boss[i]);
+        player->processing_if_hit_by_boss_egg(&boss[i]);
+    }
+}
+
 // ==================== MAIN ====================
 int main(int argc, char *argv[])
 {
@@ -428,7 +442,7 @@ int main(int argc, char *argv[])
     }
 
     // ===============<LEVEL 1>================
-    level = 3;
+    level = 1;
     play_music_level(level, background_music);
     intro_before_level(level);
 
@@ -463,7 +477,6 @@ int main(int argc, char *argv[])
     level++;
     level = 2;
     play_music_level(level, background_music);
-
     while (level == 2)
     {
         common_process(player, present, event);
@@ -489,20 +502,12 @@ int main(int argc, char *argv[])
     level++;
     level = 3;
     play_music_level(level, background_music);
+    boss[0].set_rect_cordinate(SCREEN_WIDTH / 2, 0);
 
     while (level == 3)
     {
         common_process(player, present, event);
-        for (int i = 0; i < boss_number; i++)
-        {
-            boss[i].render_animation(renderer, 1);
-            //boss[i].moving_toward_player(player);
-            boss[i].firing_eggs();
-            boss[i].update_the_eggs();
-            boss[i].render_the_eggs();
-            player->processing_if_hit_by_boss(&boss[i]);
-            player->processing_if_hit_by_boss_egg(&boss[i]);
-        }
+        process_boss_vs_player(boss, player);
         if (all_boss_dead(boss) == true || player->get_health() <= 0)
         {
             std::cout << "player_is_dead";

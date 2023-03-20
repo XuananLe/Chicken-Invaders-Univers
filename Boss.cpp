@@ -102,7 +102,6 @@ void Boss::render_animation(SDL_Renderer *renderer, const double &scale)
         SDL_Point center = {destRect.w / 2, destRect.h / 2};
         // render the sprite with rotation
         SDL_RenderCopy(renderer, texture_, &frame_clip[BOSS_spriteIndex], &destRect);
-        std::cout << rect_.x << " " << rect_.y << std::endl;
     }
 }
 void Boss::move_randomly_up_down_left_right()
@@ -214,6 +213,12 @@ void Boss::firing_eggs()
 
 void Boss::moving_toward_player(MainObject *main_object)
 {
+    Uint32 current_time = SDL_GetTicks();
+    if(current_time - last_time_move <= 100)
+    {
+        return;
+    }
+    last_time_move = current_time;
     double dx = main_object->get_rect().x - Boss::rect_.x;
     double dy = main_object->get_rect().y - Boss::rect_.y;
     double distance = sqrt(dx * dx + dy * dy);
@@ -224,4 +229,24 @@ void Boss::moving_toward_player(MainObject *main_object)
     v_y = unit_y * speed;
     rect_.x += v_x;
     rect_.y += v_y;
+}
+void Boss::moving_like_zigzag()
+{
+    // double x_speed = 2;
+    // double y_speed = 2;
+    // double x_direction = 1;
+    // double y_direction = 1;
+    // double x = rect_.x + x_speed * x_direction;
+    // double y = rect_.y + y_speed * y_direction;
+    // if(x <= 0 || x + rect_.w >= SCREEN_WIDTH)
+    // {
+    //     x_direction = -x_direction;
+    // }
+    // if(y <= 0 || y + rect_.h >= SCREEN_HEIGHT)
+    // {
+    //     y_direction = -y_direction;
+    // }
+    // rect_.x = x;
+    // rect_.y = y;
+    // std::cout << rect_.x << " " << rect_.y << std::endl;
 }

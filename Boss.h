@@ -101,7 +101,7 @@ void firing_eggs(MainObject* main_object);
 void moving_toward_player(MainObject * main_object);
 void moving_toward_player();
 void firing_eggs();
-
+void moving_like_zigzag();
 
 void update_the_eggs()
 {
