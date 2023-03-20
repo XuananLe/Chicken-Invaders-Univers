@@ -160,3 +160,8 @@ void GameMenu::render_time()
     SDL_Rect dstrect = {10, 10, 60, 60};
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 }
+
+void GameMenu::render_game_over(MainObject* player)
+{
+    
+}

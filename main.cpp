@@ -475,7 +475,8 @@ int main(int argc, char *argv[])
     // ===============<LEVEL 2>================
 
     level++;
-    level = 2;
+    // level = 2;
+    intro_before_level(level);
     play_music_level(level, background_music);
     while (level == 2)
     {
@@ -500,7 +501,9 @@ int main(int argc, char *argv[])
     // ===============<LEVEL 3>================
 
     level++;
+    // level = 3;
     level = 3;
+    intro_before_level(level);
     play_music_level(level, background_music);
     boss[0].set_rect_cordinate(SCREEN_WIDTH / 2, 0);
 

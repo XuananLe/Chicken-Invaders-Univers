@@ -214,7 +214,7 @@ void Boss::firing_eggs()
 void Boss::moving_toward_player(MainObject *main_object)
 {
     Uint32 current_time = SDL_GetTicks();
-    if(current_time - last_time_move <= 100)
+    if(current_time - last_time_move <= 50)
     {
         return;
     }

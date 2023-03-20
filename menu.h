@@ -33,6 +33,7 @@ public:
     void render_before_level(int level);
     void set_game_has_started(const bool & state){game_has_started = state;}
     void render_menu();
+    void render_game_over(MainObject* player);
     void render_health_bar(MainObject* player);
     void render_time();
 };
