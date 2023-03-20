@@ -37,6 +37,7 @@ Mix_Chunk* hit_sound;
 Mix_Chunk* getting_present_sound;
 int number_of_wings = 0;
 int health;
+int ammo_type = 1; // 1 mean BORON , 2 mean NEUTRON
 bool got_hit;
 int ammo_level = 0;
 

@@ -8,7 +8,7 @@ const Uint32 CHICKEN_spritetime = 50;
 // IMPLEMENTATION OF CONSTRUCTOR AND DESTRUCTOR
 Chicken::Chicken()
 {
-    health_ = 3;
+    health_ = 10;
     speed_ = 10;
     radius_ = 500;
     angle_increment = 2;
@@ -321,6 +321,10 @@ void Chicken::generate_present()
     if (health_ != 0 && has_present == 1)
     {
         present->set_kind_of_present(rand() % 5);
+        if (present->get_kind_of_present() == 2)
+        {
+            present->set_kind_of_present(3);
+        }
         present->set_rect_cordinate(rect_.x + rect_.w / 2, rect_.y + rect_.h / 2);
         return;
     }
@@ -361,5 +365,26 @@ void Chicken::free()
     {
         SDL_DestroyTexture(texture_);
         texture_ = NULL;
+    }
+}
+
+void Chicken::moving_parabola()
+{
+    if (health_ <= 0 || !is_on_screen)
+    {
+        return;
+    }
+    // Define the parabola parameters
+    double a = -0.005;              // Controls the steepness of the parabola
+    double h = SCREEN_WIDTH / 2.0;  // The x-coordinate of the vertex
+    double k = SCREEN_HEIGHT / 2.0; // The y-coordinate of the vertex
+    // Update x position
+    rect_.x += x_direction_ * speed_;
+    // Update y position using the parabolic equation: y = a * (x - h)^2 + k
+    rect_.y = a * pow(rect_.x - h, 2) + k;
+    // Reverse direction when reaching the screen edges
+    if (rect_.x <= 0 || rect_.x + rect_.w >= SCREEN_WIDTH)
+    {
+        x_direction_ *= -1;
     }
 }

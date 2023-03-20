@@ -11,14 +11,14 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 20;
-const int chicken_number = 15;
+const int chicken_number = 3;
 bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
 int level = 0;
 const int boss_number = 2;
 Uint64 SCORE = SDL_GetTicks();
-Mix_Music *background_music     = NULL;
+Mix_Music *background_music  = NULL;
 
 // ======================= Enity Variable ======================= \\
 bool InitData();
@@ -225,7 +225,7 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     {
         chicken[i].render_animation(renderer, 1.55);
         chicken[i].handle_shooting_eggs(player);
-        chicken[i].moving_diagnoally();
+        chicken[i].moving_back_and_forth();
         chicken[i].update_the_eggs();
         chicken[i].render_the_eggs();
         chicken[i].generate_present();
@@ -314,11 +314,15 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         return;
 
     Uint32 current_time = SDL_GetTicks();
-    if ((current_time - last_time_present_fall_down) >= 10000 && present->get_is_on_screen() == false)
+    if ((current_time - last_time_present_fall_down) >= 10000 && player->get_health() <= 2 && present->get_is_on_screen() == false)
     {
         present->set_is_on_screen(true);
         present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
-        present->set_kind_of_present(0);
+        present->set_kind_of_present(rand() % 3);
+        if(present->get_kind_of_present() == 2)
+        {
+            present->set_kind_of_present(0);
+        }
         last_time_present_fall_down = current_time;
     }
 

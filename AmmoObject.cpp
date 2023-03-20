@@ -78,8 +78,8 @@ void AmmoObject::load_static_ammo_picture(SDL_Renderer *renderer, const char *fi
         }
         else
         {
-            rect_.w = surface->w;
-            rect_.h = surface->h;
+            rect_.w = static_cast<int>(surface->w);
+            rect_.h = static_cast<int>(surface->h);
         }
         SDL_FreeSurface(surface);
     }

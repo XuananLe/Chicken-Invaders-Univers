@@ -102,7 +102,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
         if (1 <= x && x <= 390 && y >= 47 && y <= 90)
         {
             const std::string url = "https://xuananle.github.io/demowebpage/";
-            const std::string cmd = "xdg-open" + url;
+            const std::string cmd = "xdg-open " + url;
             system(cmd.c_str());
         }
     }
@@ -157,11 +157,11 @@ void GameMenu::render_time()
     SDL_Color color = {255,0,0, 255};
     SDL_Surface *surface = TTF_RenderText_Solid(GameMenu::new_font, time_text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_Rect dstrect = {10, 10, 60, 60};
+    SDL_Rect dstrect = {10, 10, 100, 60};
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 }
 
 void GameMenu::render_game_over(MainObject* player)
 {
-    
+    if(player->get_health() > 0) return;    
 }

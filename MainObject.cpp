@@ -108,7 +108,7 @@ void MainObject::handling_movement(SDL_Event &event)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
-        
+
         int cursor_x = event.motion.x;
         int cursor_y = event.motion.y;
 
@@ -157,77 +157,69 @@ void MainObject::handling_shooting(SDL_Event &event)
             Mix_AllocateChannels(100);
             AmmoObject *ammo = new AmmoObject();
             std::string path = "res/image/";
-            int type = ammo->get_type();
-            type = 1;
             std::string ammo_type_123 = "";
-            if (type == 1)
+            if (ammo_type == 2)
             {
                 ammo_type_123 = "BORON";
-                ammo->set_speed(12);
+                ammo->set_speed(10);
                 if (MainObject::ammo_level == 0)
                 {
-                    ammo->set_rect_width_height(6, 86);
-                    ammo->set_damage(1);
+                    ammo->set_damage(2);
                 }
                 else if (MainObject::ammo_level == 1)
                 {
-                    ammo->set_rect_width_height(16, 86);
-                    ammo->set_damage(2);
+                    ammo->set_damage(3);
                 }
                 else if (MainObject::ammo_level == 2)
                 {
-                    ammo->set_rect_width_height(26, 86);
-                    ammo->set_damage(3);
-                }
-                else if (MainObject::ammo_level == 3)
-                {
-                    ammo->set_rect_width_height(34, 96);
                     ammo->set_damage(4);
                 }
+                else if (MainObject::ammo_level == 3)
+                {
+                    ammo->set_damage(5);
+                }
             }
-            else if (type == 2)
+            else if (ammo_type == 1)
             {
                 ammo_type_123 = "NEUTRON";
-                ammo->set_speed(15);
+                ammo->set_speed(20);
                 if (MainObject::ammo_level == 0)
                 {
-                    ammo->set_rect_width_height(10, 86);
                     ammo->set_damage(1);
                 }
                 else if (MainObject::ammo_level == 1)
                 {
-                    ammo->set_rect_width_height(21, 66);
                     ammo->set_damage(2);
                 }
                 else if (MainObject::ammo_level == 2)
                 {
-                    ammo->set_rect_width_height(32, 86);
                     ammo->set_damage(3);
                 }
                 else if (MainObject::ammo_level == 3)
                 {
-                    ammo->set_rect_width_height(42, 86);
                     ammo->set_damage(4);
                 }
             }
             else
             {
-                std::cout << "INVALID AMMO TYPE" << std::endl;
-                exit(0);
+                std::cout << "MainObject.cpp INVALID AMMO TYPE" << std::endl;
+                exit(EXIT_FAILURE);
             }
-            std::string path_ammo = path + ammo_type_123 + 
-            std::to_string(ammo_level) + ".png";
+            std::string path_ammo = path + ammo_type_123 + std::to_string(ammo_level) + ".png";
+
             ammo->load_static_ammo_picture(renderer, path_ammo.c_str());
-            if(ammo->get_texture() == NULL)
+            if (ammo->get_texture() == NULL)
             {
-                std::cout << "ERROR: " << SDL_GetError() << std::endl;
+                std::cout << "ERROR: at file MainObject.cpp " << SDL_GetError() << std::endl;
                 std::cout << IMG_GetError() << std::endl;
                 exit(0);
             }
+            
             ammo->set_alive(true);
             ammo->set_can_move(true);
             ammo->set_rect_cordinate(rect_.x + rect_.w / 2 - 10, rect_.y);
             ammo_list.push_back(ammo);
+
             if (Mix_PlayChannel(-1, shoot_sound, 0) == -1)
             {
                 printf("Unable to play WAV file: %s\n", Mix_GetError());
@@ -238,8 +230,8 @@ void MainObject::handling_shooting(SDL_Event &event)
         {
             // TO DO
         }
-        else return;
-            
+        else
+            return;
     }
     else
         return;
@@ -274,14 +266,14 @@ void MainObject::render_shooting()
 // IMPLEMENT Processing the shooting
 void MainObject::process_shooting_if_hit_chicken(Chicken *chicken)
 {
-    if (health == 0)
+    if (health <= 0 || chicken->get_health() <= 0)
         return;
     for (int i = 0; i < ammo_list.size(); i++)
     {
         if (check_collision_2_rect(ammo_list[i]->get_rect(), chicken->get_rect()))
         {
             chicken->play_hit_sound();
-            chicken->set_health(chicken->get_health() - 1);
+            chicken->set_health(chicken->get_health() - ammo_list[i]->get_damage());
             if (chicken->get_health() <= 0)
             {
                 chicken->set_rect_cordinate_width_and_height(-9999, -9999, 0, 0);
@@ -299,8 +291,8 @@ void MainObject::process_shooting_if_hit_chicken(Chicken *chicken)
 void MainObject::process_if_eat_wing_rect(Chicken *chicken)
 {
     if (health <= 0)
-        return; 
-    if ((chicken->get_health() == 0) && (check_collision_2_rect(chicken->get_wing_rect(), rect_)) == true && (chicken->get_on_screen() == true) && chicken->get_has_wing() == true)
+        return;
+    if ((chicken->get_health() <= 0) && (check_collision_2_rect(chicken->get_wing_rect(), rect_)) == true && (chicken->get_on_screen() == true) && chicken->get_has_wing() == true)
     {
         MainObject::number_of_wings += 1;
         Mix_AllocateChannels(100);
@@ -382,7 +374,7 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
         if (check_collision_2_rect(ammo_list[i]->get_rect(), boss->get_rect()) and ammo_list[i]->get_can_move() == true)
         {
             Mix_AllocateChannels(100);
-            boss->set_health(boss->get_health() - 1);
+            boss->set_health(boss->get_health() - ammo_list[i]->get_damage());
             ammo_list[i]->set_alive(false);
             ammo_list[i]->set_can_move(false);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
@@ -425,7 +417,7 @@ void MainObject::processing_if_got_present(Present *present)
 {
     if (health <= 0)
         return;
-    if(present == NULL)
+    if (present == NULL)
     {
         return;
     }
@@ -436,18 +428,25 @@ void MainObject::processing_if_got_present(Present *present)
         present->set_is_on_screen(false);
         if (present->get_kind_of_present() == 0)
         {
-            std::cout << MainObject::health << std::endl;
+            if (MainObject::health >= 3)
+                return;
+            MainObject::health += 1;
         }
-        else if (present->get_kind_of_present() == 2)
+        else if (present->get_kind_of_present() == 1 || present->get_kind_of_present() == 3)
         {
 
+            if (present->get_kind_of_present() == 1)
+            {
+                MainObject::ammo_type = 1;
+            }
+            else MainObject::ammo_type = 2;
+            
             if (MainObject::ammo_level < 3)
             {
                 MainObject::ammo_level = MainObject::ammo_level + 1;
             }
-        }
-        else if (present->get_kind_of_present() == 3)
-        {
+            else
+                return;
         }
         else
         {

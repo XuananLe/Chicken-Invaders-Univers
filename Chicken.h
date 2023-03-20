@@ -145,6 +145,8 @@ public:
     void moving_toward_the_player();
 
     void moving_diagnoally();
+    
+    void moving_parabola();
 
     // FREE METHOD
     void free();
