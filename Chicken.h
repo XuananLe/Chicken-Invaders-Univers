@@ -100,7 +100,7 @@ public:
     void moving_like_a_circle();
 
     // CHICKEN HANDLE SHOOTING EGGS AT RANDOM TIME
-    void handle_shooting_eggs(MainObject* main_object);
+    void handle_shooting_eggs_toward_player(MainObject* main_object);
 
     // UPDATE THE EGGS
     void update_the_eggs();
@@ -139,6 +139,7 @@ public:
     // GET Wing rect
     SDL_Rect get_wing_rect() const { return wing_rect_; }
 
+    void shooting_eggs_toward_player();
 
     void moving_toward_the_player(MainObject* main_object);
 

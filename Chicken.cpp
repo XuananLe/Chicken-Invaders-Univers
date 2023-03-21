@@ -246,7 +246,7 @@ void Chicken::moving_like_a_circle()
 }
 
 // HANDLE SHOOTING EGGS AT A RANDOM TIME
-void Chicken::handle_shooting_eggs(MainObject *main_object)
+void Chicken::handle_shooting_eggs_toward_player(MainObject *main_object)
 {
     if (health_ <= 0 || !is_on_screen)
     {
@@ -262,7 +262,8 @@ void Chicken::handle_shooting_eggs(MainObject *main_object)
     int rand_num = rand() % 100 + 1;
     last_egg_time_ = current_time;
     if (rand_num <= 10)
-    { // 95% chance of laying egg
+    { 
+        // 95% chance of laying egg
         double dx = main_object->get_rect().x - rect_.x;
         double dy = main_object->get_rect().y - rect_.y;
         double distance = sqrt(dx * dx + dy * dy);
@@ -283,6 +284,14 @@ void Chicken::handle_shooting_eggs(MainObject *main_object)
 
 // IMPLEMENTATION OF UPDATING THE EGGS
 void Chicken::update_the_eggs()
+{
+    for (int i = 0; i < eggs_list.size(); i++)
+    {
+        eggs_list[i]->move_diagonally();
+    }
+}
+
+void Chicken::shooting_eggs_toward_player()
 {
     for (int i = 0; i < eggs_list.size(); i++)
     {

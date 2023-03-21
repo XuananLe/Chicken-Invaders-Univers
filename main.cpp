@@ -10,8 +10,8 @@
 #include "Chicken.h"
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
-const int number_of_asteroid = 20;
-const int chicken_number = 3;
+const int number_of_asteroid = 25;
+const int chicken_number = 15;
 bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
@@ -224,9 +224,9 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     for (int i = 0; i < chicken_number; i++)
     {
         chicken[i].render_animation(renderer, 1.55);
-        chicken[i].handle_shooting_eggs(player);
-        chicken[i].moving_back_and_forth();
-        chicken[i].update_the_eggs();
+        chicken[i].moving_diagnoally();
+        chicken[i].handle_shooting_eggs_toward_player(player);
+        chicken[i].shooting_eggs_toward_player();
         chicken[i].render_the_eggs();
         chicken[i].generate_present();
     }
@@ -318,7 +318,7 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     {
         present->set_is_on_screen(true);
         present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
-        present->set_kind_of_present(rand() % 3);
+        present->set_kind_of_present(3);
         if(present->get_kind_of_present() == 2)
         {
             present->set_kind_of_present(0);
@@ -478,7 +478,6 @@ int main(int argc, char *argv[])
     }
     // ===============<LEVEL 2>================
 
-    level++;
     // level = 2;
     intro_before_level(level);
     play_music_level(level, background_music);
@@ -509,7 +508,6 @@ int main(int argc, char *argv[])
     level = 3;
     intro_before_level(level);
     play_music_level(level, background_music);
-    boss[0].set_rect_cordinate(SCREEN_WIDTH / 2, 0);
 
     while (level == 3)
     {

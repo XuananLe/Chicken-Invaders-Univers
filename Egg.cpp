@@ -72,6 +72,7 @@ void Egg::render()
 // IMPLEMENTATION OF UPDATE METHOD FOR EGG
 void Egg::update()
 {
+    speed_ = 10;
     if (alive_ == false)
         return;
     if (is_broken == false)
@@ -98,6 +99,7 @@ void Egg::move_diagonally()
         is_broken = true;
     }
 }
+
 // IMPLEMENTATION OF FREE METHOD
 void Egg::free()
 {
