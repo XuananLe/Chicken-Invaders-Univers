@@ -287,7 +287,7 @@ void Chicken::update_the_eggs()
 {
     for (int i = 0; i < eggs_list.size(); i++)
     {
-        eggs_list[i]->move_diagonally();
+        eggs_list[i]->move_horizontally();
     }
 }
 

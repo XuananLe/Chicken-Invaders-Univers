@@ -48,7 +48,7 @@ public:
     void render();
 
     // UPDATE METHOD FOR EGG
-    void update();
+    void move_horizontally();
 
     // FREE METHOD
     void free();

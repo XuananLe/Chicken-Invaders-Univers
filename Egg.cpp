@@ -70,7 +70,7 @@ void Egg::render()
     }
 }
 // IMPLEMENTATION OF UPDATE METHOD FOR EGG
-void Egg::update()
+void Egg::move_horizontally()
 {
     speed_ = 10;
     if (alive_ == false)

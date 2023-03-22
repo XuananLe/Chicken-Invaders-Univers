@@ -11,7 +11,7 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 25;
-const int chicken_number = 15;
+const int chicken_number = 3;
 bool is_paused = false;
 bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
@@ -224,9 +224,12 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     for (int i = 0; i < chicken_number; i++)
     {
         chicken[i].render_animation(renderer, 1.55);
+
         chicken[i].moving_diagnoally();
+        
         chicken[i].handle_shooting_eggs_toward_player(player);
         chicken[i].shooting_eggs_toward_player();
+
         chicken[i].render_the_eggs();
         chicken[i].generate_present();
     }
@@ -454,14 +457,14 @@ int main(int argc, char *argv[])
     {
         common_process(player, present, event);
         process_chicken_vs_player(chicken, player);
-        if (all_level_1_chicken_dead(chicken) == true && all_level_1_2_chicken_dead(chicken2) == true)
+        if (all_level_1_chicken_dead(chicken) == true)
         {
             level = 2;
         }
-        else if (all_level_1_chicken_dead(chicken) == true)
-        {
-            process_chicken_vs_player(chicken2, player);
-        }
+        // else if (all_level_1_chicken_dead(chicken) == true)
+        // {
+        //     process_chicken_vs_player(chicken2, player);
+        // }
         if (player->get_health() <= 0)
         {
             exit(EXIT_SUCCESS);
@@ -478,7 +481,7 @@ int main(int argc, char *argv[])
     }
     // ===============<LEVEL 2>================
 
-    // level = 2;
+    level = 2;
     intro_before_level(level);
     play_music_level(level, background_music);
     while (level == 2)
@@ -503,8 +506,6 @@ int main(int argc, char *argv[])
 
     // ===============<LEVEL 3>================
 
-    level++;
-    // level = 3;
     level = 3;
     intro_before_level(level);
     play_music_level(level, background_music);
