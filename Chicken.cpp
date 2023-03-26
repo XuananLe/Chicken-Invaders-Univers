@@ -8,7 +8,7 @@ const Uint32 CHICKEN_spritetime = 50;
 // IMPLEMENTATION OF CONSTRUCTOR AND DESTRUCTOR
 Chicken::Chicken()
 {
-    health_ = 10;
+    health_ = 5;
     speed_ = 10;
     radius_ = 500;
     angle_increment = 2;

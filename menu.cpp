@@ -27,7 +27,7 @@ GameMenu::GameMenu()
     before_level.w = 800;
     before_level.h = 200;
     before_level.x = SCREEN_WIDTH / 2 - before_level.w / 2;
-    before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2;
+    before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2 - 300;
 
     health_bar_texture = IMG_LoadTexture(renderer, "res/image/hp_bar.png");
     if (health_bar_texture == NULL)
@@ -53,7 +53,14 @@ GameMenu::~GameMenu()
 
 void GameMenu::render_menu()
 {
-    SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
+    if(player_hit_option == 1)
+    {
+        SDL_RenderCopy(renderer, option_texture, NULL, &option_rect);
+    }
+    else if(game_has_started == false)
+    {
+        SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
+    }
 }
 void GameMenu::render_health_bar(MainObject *player)
 {
@@ -75,7 +82,7 @@ void GameMenu::render_health_bar(MainObject *player)
 }
 void GameMenu::process_input_menu(SDL_Event &event)
 {
-    if (event.type == SDL_QUIT)
+    if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
     {
         exit(EXIT_SUCCESS);
     }
@@ -89,10 +96,19 @@ void GameMenu::process_input_menu(SDL_Event &event)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
+        if(player_hit_option == 1)
+        {
+            player_hit_option = -1;
+            return;
+        }
         if (x >= 490 && x <= 670 && y >= 900 && y <= 1074)
         {
             game_has_started = true;
             return;
+        }
+        if(x >= 870 and x<= 1050 and 895 <= y and y <= 1074 && player_hit_option == -1)
+        {
+            player_hit_option = 1;
         }
         if (x >= 1830 && x <= 1913 && y >= 8 && y <= 90)
         {
@@ -104,6 +120,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
             const std::string url = "https://xuananle.github.io/demowebpage/";
             const std::string cmd = "xdg-open " + url;
             system(cmd.c_str());
+            return;
         }
     }
 }
@@ -146,8 +163,9 @@ void GameMenu::render_before_level(int level)
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
 }
-void GameMenu::render_time()
+void GameMenu::render_time(MainObject* player)
 {
+    if(player->get_health() <= 0) return;
     last_time = start_time;
     start_time = SDL_GetTicks();
     elapsed_time = start_time - last_time;
@@ -164,4 +182,30 @@ void GameMenu::render_time()
 void GameMenu::render_game_over(MainObject* player)
 {
     if(player->get_health() > 0) return;    
+    std::string message = "GAME OVER";
+    // minutes and seconds
+    std::string message2 = "YOU SURVIVED FOR " + std::string(time_text);
+    std::string message3 = "PRESS C TO CONTINUE";
+
+    SDL_Rect next_line = {before_level.x - 100, before_level.y + 200, before_level.w + 200, before_level.h};
+    SDL_Rect next_line2 = {before_level.x - 100, before_level.y + 400, before_level.w + 200, before_level.h};
+
+    SDL_Surface *surface = TTF_RenderText_Solid(transition_level, message.c_str(), color);
+    SDL_Surface *surface2 = TTF_RenderText_Solid(transition_level, message2.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
+    SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
+    SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
+    
+    if (texture == nullptr) 
+    {
+        std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
+        SDL_FreeSurface(surface);
+        return;
+    }
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(surface2);
+    SDL_RenderCopy(renderer, texture2, NULL, &next_line);
+    SDL_RenderCopy(renderer, texture3, NULL, &next_line2);
+    SDL_RenderCopy(renderer, texture, NULL, &before_level);
 }

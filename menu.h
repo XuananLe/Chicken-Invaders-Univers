@@ -11,6 +11,9 @@ class GameMenu
 {
 protected:
     SDL_Texture *menu_texture = NULL;
+    int player_hit_option = -1; // -1 mean no option is selected 1 mean hit
+    SDL_Texture* option_texture = IMG_LoadTexture(renderer,"res/image/guidance.png");
+    SDL_Rect option_rect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
     SDL_Texture *before_level_texture = NULL;
     SDL_Texture *health_bar_texture = NULL;
     TTF_Font* transition_level = NULL;
@@ -35,6 +38,6 @@ public:
     void render_menu();
     void render_game_over(MainObject* player);
     void render_health_bar(MainObject* player);
-    void render_time();
+    void render_time(MainObject* player);
 };
 #endif

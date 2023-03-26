@@ -8,6 +8,7 @@
 #include "Asteroid.h"
 #include "Boss.h"
 #include "Chicken.h"
+
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 const int number_of_asteroid = 25;
@@ -17,8 +18,7 @@ bool player_want_to_play_again = false;
 bool game_is_truly_end = false;
 int level = 0;
 const int boss_number = 2;
-Uint64 SCORE = SDL_GetTicks();
-Mix_Music *background_music  = NULL;
+Mix_Music *background_music = NULL;
 
 // ======================= Enity Variable ======================= \\
 bool InitData();
@@ -226,7 +226,7 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
         chicken[i].render_animation(renderer, 1.55);
 
         chicken[i].moving_diagnoally();
-        
+
         chicken[i].handle_shooting_eggs_toward_player(player);
         chicken[i].shooting_eggs_toward_player();
 
@@ -322,7 +322,7 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         present->set_is_on_screen(true);
         present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
         present->set_kind_of_present(3);
-        if(present->get_kind_of_present() == 2)
+        if (present->get_kind_of_present() == 2)
         {
             present->set_kind_of_present(0);
         }
@@ -343,7 +343,8 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
 void init_boss(Boss *boss)
 {
-    if (is_paused == true) return;
+    if (is_paused == true)
+        return;
     boss[0].load_animation_sprite(renderer, "res/image/boss.png");
     boss[0].set_clips();
     boss[0].set_rect_cordinate(100, 100);
@@ -351,7 +352,6 @@ void init_boss(Boss *boss)
     boss[1].set_clips();
     boss[1].set_rect_cordinate(SCREEN_WIDTH - 100, 100);
 }
-
 
 void init_menu(GameMenu *menu)
 {
@@ -386,7 +386,7 @@ void intro_before_level(int level)
         {
             if (is_paused == false)
             {
-                menu->render_time();
+                menu->render_time(player);
             }
             menu->render_health_bar(player);
         }
@@ -408,6 +408,19 @@ void process_boss_vs_player(Boss *boss, MainObject *player)
         player->processing_if_hit_by_boss(&boss[i]);
         player->processing_if_hit_by_boss_egg(&boss[i]);
     }
+}
+
+void menu_process_player_related_event()
+{
+    if (menu != NULL)
+    {
+        if (is_paused == false && player->get_health() > 0)
+        {
+            menu->render_time(player);
+        }
+        menu->render_health_bar(player);
+    }
+    menu->render_game_over(player);
 }
 
 // ==================== MAIN ====================
@@ -450,6 +463,7 @@ int main(int argc, char *argv[])
 
     // ===============<LEVEL 1>================
     level = 1;
+
     play_music_level(level, background_music);
     intro_before_level(level);
 
@@ -457,31 +471,19 @@ int main(int argc, char *argv[])
     {
         common_process(player, present, event);
         process_chicken_vs_player(chicken, player);
-        if (all_level_1_chicken_dead(chicken) == true)
+        if (all_level_1_chicken_dead(chicken) == true && player->get_health() >= 1)
         {
-            level = 2;
+            level++;
         }
-        // else if (all_level_1_chicken_dead(chicken) == true)
-        // {
-        //     process_chicken_vs_player(chicken2, player);
-        // }
-        if (player->get_health() <= 0)
+        else if (all_level_1_chicken_dead(chicken) == true)
         {
-            exit(EXIT_SUCCESS);
+            process_chicken_vs_player(chicken2, player);
         }
-        if (menu != NULL)
-        {
-            if (is_paused == false)
-            {
-                menu->render_time();
-            }
-            menu->render_health_bar(player);
-        }
+        menu_process_player_related_event();
         update_game_state();
     }
     // ===============<LEVEL 2>================
 
-    level = 2;
     intro_before_level(level);
     play_music_level(level, background_music);
     while (level == 2)
@@ -490,23 +492,14 @@ int main(int argc, char *argv[])
         process_astroid_vs_player(asteroid, player);
         if (all_level_2_asteroid_dead(asteroid) == true)
         {
-            level = 3;
+            level++;
         }
-        if (player->get_health() <= 0)
-        {
-            exit(EXIT_SUCCESS);
-        }
-        if (is_paused == false)
-        {
-            menu->render_time();
-        }
-        menu->render_health_bar(player);
+        menu_process_player_related_event();
         update_game_state();
     }
 
     // ===============<LEVEL 3>================
 
-    level = 3;
     intro_before_level(level);
     play_music_level(level, background_music);
 
@@ -519,11 +512,7 @@ int main(int argc, char *argv[])
             std::cout << "player_is_dead";
             exit(EXIT_SUCCESS);
         }
-        if (is_paused == false)
-        {
-            menu->render_time();
-        }
-        menu->render_health_bar(player);
+        menu_process_player_related_event();
         update_game_state();
     }
     // FREEING METHOD AND QUITTING

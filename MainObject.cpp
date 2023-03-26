@@ -58,7 +58,7 @@ void MainObject::load_animation_sprite(SDL_Renderer *renderer, const char *file)
 
 void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
@@ -239,7 +239,7 @@ void MainObject::handling_shooting(SDL_Event &event)
 // IMPLEMENT RENDERING SHOOTING AMMO
 void MainObject::render_shooting()
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     // Remove any bullets that have gone off-screen or hit a target.
     for (auto it = ammo_list.begin(); it != ammo_list.end();)
@@ -309,6 +309,7 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
     {
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
+        Mix_VolumeChunk(hit_sound, 64);
         chicken->set_health(-1);
         chicken->set_on_screen(false);
         chicken->set_alive(false);
@@ -318,7 +319,7 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
 }
 void MainObject::process_if_hit_by_eggs(Chicken *chicken)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     for (int i = 0; i < chicken->get_eggs_list().size(); i++)
     {
@@ -337,7 +338,7 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
 }
 void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     for (int i = 0; i < boss->get_egg_list().size(); i++)
     {
@@ -347,6 +348,7 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
                 return;
             // early return technique
             Mix_AllocateChannels(100);
+            Mix_VolumeChunk(hit_sound, 30);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
             MainObject::health = MainObject::health - 1;
             boss->get_egg_list()[i]->set_alive(false);
@@ -356,7 +358,7 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
 }
 void MainObject::processing_if_hit_by_boss(Boss *boss)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if (boss->get_on_screen() == false)
         return;
@@ -384,7 +386,7 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
 }
 void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
 {
-    if (health == 0)
+    if (health <= 0)
         return;
     if (check_collision_2_rect(asteroid->get_rect(), rect_) == true && asteroid->get_is_on_screen() == true)
     {
