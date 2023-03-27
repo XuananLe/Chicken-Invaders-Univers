@@ -27,6 +27,7 @@ protected:
     Uint32 elapsed_time = 0;
     bool game_has_started;
     char time_text[16];
+    Mix_Chunk *game_over = Mix_LoadWAV("res/sound/game_over.wav");
 public:
     GameMenu();
     SDL_Texture* get_texture() const {return menu_texture;}

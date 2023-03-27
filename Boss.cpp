@@ -6,12 +6,9 @@ Uint32 BOSS_spriteIndex = 0;
 const Uint32 BOSS_NUMBER_OF_EGGS = 9;
 const Uint32 BOSS_spritetime = 100;
 // IPLEMANTATION OF BOSS CONSTRUCTOR AND DESTRUCTOR
-Boss::~Boss()
-{
-}
 Boss::Boss()
 {
-    health_ = 3;
+    health_ = 10;
     rect_.x = 0;
     rect_.y = 0;
     rect_.w = 200;
@@ -31,7 +28,10 @@ Boss::Boss()
     is_on_screen = true;
     shooting_egg_sound_ = Mix_LoadWAV("res/sound/Laying_eggs.wav");
     boss_shit = Mix_LoadWAV("res/sound/Ci1bosshit.wav");
-    // move_timer_ = SDL_AddTimer(1000,move_timer_callback, this);
+}
+Boss::~Boss()
+{
+
 }
 void Boss::set_clips()
 {
@@ -76,7 +76,7 @@ void Boss::render_animation(SDL_Renderer *renderer, const double &scale)
     {
         return;
     }
-    if (health_ <= 0)
+    if (Boss::health_ <= 0)
     {
         rect_.x = -99999;
         rect_.y = -99999;
@@ -214,7 +214,8 @@ void Boss::firing_eggs()
 void Boss::moving_toward_player(MainObject *main_object)
 {
     Uint32 current_time = SDL_GetTicks();
-    if(current_time - last_time_move <= 50)
+    int random_num = rand() % 100 + 1;
+    if (current_time - last_time_move <= 2000 && random_num <= 100)
     {
         return;
     }
@@ -224,12 +225,29 @@ void Boss::moving_toward_player(MainObject *main_object)
     double distance = sqrt(dx * dx + dy * dy);
     double unit_x = dx / distance;
     double unit_y = dy / distance;
-    double speed = 10;
-    v_x = unit_x * speed;
-    v_y = unit_y * speed;
+    v_x = unit_x * Boss::speed_;
+    v_y = unit_y * Boss::speed_;
     rect_.x += v_x;
     rect_.y += v_y;
 }
+
+void Boss::render_health_bar()
+{
+    if (Boss::health_ <= 0)
+    {
+        return;
+    }
+    health_bar_rect.x = rect_.x;
+    health_bar_rect.y = rect_.y - 10;
+    SDL_Rect bg_rect = {health_bar_rect.x, health_bar_rect.y, health_bar_width, health_bar_height};
+    SDL_Rect fg_rect = {health_bar_rect.x, health_bar_rect.y, health_bar_width, health_bar_height};
+    fg_rect.w = health_bar_width * Boss::health_ / 10;
+    SDL_SetRenderDrawColor(renderer, bgColor.r, bgColor.g, bgColor.b, bgColor.a);
+    SDL_RenderFillRect(renderer, &bg_rect);
+    SDL_SetRenderDrawColor(renderer, fgColor.r, fgColor.g, fgColor.b, fgColor.a);
+    SDL_RenderFillRect(renderer, &fg_rect);
+}
+
 void Boss::moving_like_zigzag()
 {
     // double x_speed = 2;

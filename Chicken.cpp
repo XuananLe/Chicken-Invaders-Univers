@@ -8,7 +8,7 @@ const Uint32 CHICKEN_spritetime = 50;
 // IMPLEMENTATION OF CONSTRUCTOR AND DESTRUCTOR
 Chicken::Chicken()
 {
-    health_ = 5;
+    health_ = 10;
     speed_ = 10;
     radius_ = 500;
     angle_increment = 2;
@@ -254,14 +254,14 @@ void Chicken::handle_shooting_eggs_toward_player(MainObject *main_object)
     }
 
     Uint32 current_time = SDL_GetTicks();
-    if (current_time - last_egg_time_ < 2000)
+    if (current_time - last_egg_time_ < 3000)
     { // Only lay egg every 5 seconds
         return;
     }
 
     int rand_num = rand() % 100 + 1;
     last_egg_time_ = current_time;
-    if (rand_num <= 10)
+    if (rand_num <= 90)
     { 
         // 95% chance of laying egg
         double dx = main_object->get_rect().x - rect_.x;

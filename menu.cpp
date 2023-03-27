@@ -8,6 +8,7 @@ GameMenu::GameMenu()
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
+    Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     game_has_started = false;
     menu_rect.x = 0;
     transition_level = TTF_OpenFont("res/font/RopaSans-Italic.ttf", 100);
@@ -46,6 +47,12 @@ GameMenu::GameMenu()
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
         exit(EXIT_FAILURE);
     }
+    game_over = Mix_LoadWAV("res/sound/game_over.wav");
+    if (game_over == NULL)
+    {
+        std::cout << "Error at file menu.cpp " << Mix_GetError() << std::endl;
+        exit(EXIT_SUCCESS);
+    }
 }
 GameMenu::~GameMenu()
 {
@@ -53,11 +60,11 @@ GameMenu::~GameMenu()
 
 void GameMenu::render_menu()
 {
-    if(player_hit_option == 1)
+    if (player_hit_option == 1)
     {
         SDL_RenderCopy(renderer, option_texture, NULL, &option_rect);
     }
-    else if(game_has_started == false)
+    else if (game_has_started == false)
     {
         SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
     }
@@ -96,7 +103,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
-        if(player_hit_option == 1)
+        if (player_hit_option == 1)
         {
             player_hit_option = -1;
             return;
@@ -106,7 +113,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
             game_has_started = true;
             return;
         }
-        if(x >= 870 and x<= 1050 and 895 <= y and y <= 1074 && player_hit_option == -1)
+        if (x >= 870 and x <= 1050 and 895 <= y and y <= 1074 && player_hit_option == -1)
         {
             player_hit_option = 1;
         }
@@ -151,7 +158,6 @@ void GameMenu::render_before_level(int level)
     if (surface == NULL)
     {
         std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        std::cout << "WHAT THE FUCK" << std::endl;
         exit(EXIT_FAILURE);
     }
     before_level_texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -163,25 +169,27 @@ void GameMenu::render_before_level(int level)
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
 }
-void GameMenu::render_time(MainObject* player)
+void GameMenu::render_time(MainObject *player)
 {
-    if(player->get_health() <= 0) return;
+    if (player->get_health() <= 0)
+        return;
     last_time = start_time;
     start_time = SDL_GetTicks();
     elapsed_time = start_time - last_time;
     int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
     int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
     sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
-    SDL_Color color = {255,0,0, 255};
+    SDL_Color color = {255, 0, 0, 255};
     SDL_Surface *surface = TTF_RenderText_Solid(GameMenu::new_font, time_text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_Rect dstrect = {10, 10, 100, 60};
     SDL_RenderCopy(renderer, texture, NULL, &dstrect);
 }
 
-void GameMenu::render_game_over(MainObject* player)
+void GameMenu::render_game_over(MainObject *player)
 {
-    if(player->get_health() > 0) return;    
+    if (player->get_health() > 0)
+        return;
     std::string message = "GAME OVER";
     // minutes and seconds
     std::string message2 = "YOU SURVIVED FOR " + std::string(time_text);
@@ -196,13 +204,15 @@ void GameMenu::render_game_over(MainObject* player)
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
     SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
     SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
-    
-    if (texture == nullptr) 
+
+    if (texture == nullptr || texture2 == nullptr || texture3 == nullptr)
     {
         std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
         SDL_FreeSurface(surface);
         return;
     }
+    Mix_VolumeChunk(GameMenu::game_over, 12);
+    Mix_PlayChannelTimed(1, GameMenu::game_over,1,1000);
     SDL_FreeSurface(surface);
     SDL_FreeSurface(surface2);
     SDL_RenderCopy(renderer, texture2, NULL, &next_line);

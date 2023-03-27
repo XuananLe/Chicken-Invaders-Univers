@@ -11,11 +11,12 @@
 
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
-const int number_of_asteroid = 25;
+
+const int number_of_asteroid = 1;
 const int chicken_number = 3;
+
 bool is_paused = false;
-bool player_want_to_play_again = false;
-bool game_is_truly_end = false;
+bool player_want_to_play_again = false; // -1 mean don't want to play again , 1 mean want to play again
 int level = 0;
 const int boss_number = 2;
 Mix_Music *background_music = NULL;
@@ -100,7 +101,7 @@ bool all_level_1_chicken_dead(Chicken *chicken)
 {
     for (int i = 0; i < chicken_number; i++)
     {
-        if (chicken[i].get_alive() == true)
+        if (chicken[i].get_health() >= 1)
         {
             return false;
         }
@@ -307,6 +308,10 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
             {
                 exit(EXIT_SUCCESS);
             }
+            if(player->get_health() <= 0 && player_want_to_play_again == false && event.key.keysym.sym == SDLK_c)
+            {
+                player_want_to_play_again = !player_want_to_play_again;
+            }
         }
         if (is_paused == true)
             break;
@@ -321,10 +326,10 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     {
         present->set_is_on_screen(true);
         present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
-        present->set_kind_of_present(3);
+        present->set_kind_of_present(rand() % 4);
         if (present->get_kind_of_present() == 2)
         {
-            present->set_kind_of_present(0);
+            present->set_kind_of_present(1);
         }
         last_time_present_fall_down = current_time;
     }
@@ -401,6 +406,9 @@ void process_boss_vs_player(Boss *boss, MainObject *player)
     for (int i = 0; i < boss_number; i++)
     {
         boss[i].render_animation(renderer, 1);
+        boss[i].render_health_bar();
+        if (player->get_health() <= 0)
+            return;
         boss[i].moving_toward_player(player);
         boss[i].firing_eggs();
         boss[i].update_the_eggs();
@@ -414,13 +422,20 @@ void menu_process_player_related_event()
 {
     if (menu != NULL)
     {
-        if (is_paused == false && player->get_health() > 0)
+        if (is_paused == false && player->get_health() > 0 && menu->get_game_has_started() == true)
         {
             menu->render_time(player);
         }
         menu->render_health_bar(player);
     }
-    menu->render_game_over(player);
+    else
+        return;
+    if (player->get_health() <= 0)
+    {
+        menu->render_game_over(player);
+    }
+    else
+        return;
 }
 
 // ==================== MAIN ====================
@@ -432,90 +447,93 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    srand(time(NULL));
-    init_menu(menu);
-    init_back_ground(back_ground);
-    init_chicken_level_1(chicken);
-    init_chicken_level_1_2(chicken2);
-    init_random_present(present);
-    init_asteroid(asteroid);
-    init_player(player);
-    init_boss(boss);
-
-    // =================<MENU>================
-    Mix_AllocateChannels(100);
-    play_music_level(level, background_music);
-
-    while (menu->get_game_has_started() == false)
+    while (true)
     {
-        menu->render_menu();
-        while (SDL_PollEvent(&event))
+        srand(time(NULL));
+        init_menu(menu);
+        init_back_ground(back_ground);
+        init_chicken_level_1(chicken);
+        init_chicken_level_1_2(chicken2);
+        init_random_present(present);
+        init_asteroid(asteroid);
+        init_player(player);
+        init_boss(boss);
+
+        // =================<MENU>================
+        Mix_AllocateChannels(100);
+        play_music_level(level, background_music);
+        while (menu->get_game_has_started() == false)
         {
-            if (event.type == SDL_QUIT)
+            menu->render_menu();
+            while (SDL_PollEvent(&event))
             {
-                exit(EXIT_FAILURE);
+                if (event.type == SDL_QUIT)
+                {
+                    exit(EXIT_FAILURE);
+                }
+                menu->process_input_menu(event);
             }
-            menu->process_input_menu(event);
+            SDL_RenderPresent(renderer);
+            SDL_RenderClear(renderer);
         }
-        SDL_RenderPresent(renderer);
-        SDL_RenderClear(renderer);
-    }
 
-    // ===============<LEVEL 1>================
-    level = 1;
+        // ===============<LEVEL 1>================
+        level = 1;
 
-    play_music_level(level, background_music);
-    intro_before_level(level);
+        play_music_level(level, background_music);
+        intro_before_level(level);
 
-    while (level == 1)
-    {
-        common_process(player, present, event);
-        process_chicken_vs_player(chicken, player);
-        if (all_level_1_chicken_dead(chicken) == true && player->get_health() >= 1)
+        while (level == 1)
         {
-            level++;
+            common_process(player, present, event);
+            process_chicken_vs_player(chicken, player);
+            if (all_level_1_chicken_dead(chicken) == true && player->get_health() >= 1 && player_want_to_play_again == false)
+            {
+                level++;
+            }
+            else if(player_want_to_play_again == true && player->get_health() <= 0)
+            {
+                level = 1;
+                player_want_to_play_again = false;
+                player->set_health(3);    
+                init_chicken_level_1(chicken);            
+            }
+            menu_process_player_related_event();
+            update_game_state();
         }
-        else if (all_level_1_chicken_dead(chicken) == true)
+        // ===============<LEVEL 2>================
+
+        intro_before_level(level);
+        play_music_level(level, background_music);
+        while (level == 2)
         {
-            process_chicken_vs_player(chicken2, player);
+            common_process(player, present, event);
+            process_astroid_vs_player(asteroid, player);
+            if (all_level_2_asteroid_dead(asteroid) == true)
+            {
+                level++;
+            }
+            menu_process_player_related_event();
+            update_game_state();
         }
-        menu_process_player_related_event();
-        update_game_state();
-    }
-    // ===============<LEVEL 2>================
 
-    intro_before_level(level);
-    play_music_level(level, background_music);
-    while (level == 2)
-    {
-        common_process(player, present, event);
-        process_astroid_vs_player(asteroid, player);
-        if (all_level_2_asteroid_dead(asteroid) == true)
+        // ===============<LEVEL 3>================
+
+        intro_before_level(level);
+        play_music_level(level, background_music);
+
+        while (level == 3)
         {
-            level++;
+            common_process(player, present, event);
+            process_boss_vs_player(boss, player);
+            if (all_boss_dead(boss) == true || player->get_health() >= 0)
+            {
+            }
+            menu_process_player_related_event();
+            update_game_state();
         }
-        menu_process_player_related_event();
-        update_game_state();
+        // FREEING METHOD AND QUITTING
     }
-
-    // ===============<LEVEL 3>================
-
-    intro_before_level(level);
-    play_music_level(level, background_music);
-
-    while (level == 3)
-    {
-        common_process(player, present, event);
-        process_boss_vs_player(boss, player);
-        if (all_boss_dead(boss) == true || player->get_health() <= 0)
-        {
-            std::cout << "player_is_dead";
-            exit(EXIT_SUCCESS);
-        }
-        menu_process_player_related_event();
-        update_game_state();
-    }
-    // FREEING METHOD AND QUITTING
     player->free();
     chicken->free();
     SDL_DestroyRenderer(renderer);
@@ -524,7 +542,6 @@ int main(int argc, char *argv[])
     SDL_Quit();
     return 0;
 }
-
 bool InitData()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)

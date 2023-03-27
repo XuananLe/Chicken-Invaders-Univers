@@ -8,6 +8,7 @@ const Uint32 MAIN_OBJECT_spritetime = 50;
 MainObject::MainObject()
 {
     texture_ = NULL;
+    is_win = false;
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     shoot_sound = Mix_LoadWAV("res/sound/arrow_firing.wav");
     eat_wing_sound = Mix_LoadWAV("res/sound/GET_FOOD.wav");
