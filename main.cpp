@@ -449,6 +449,7 @@ int main(int argc, char *argv[])
 
     while (true)
     {
+        std::cout << "Hello world" << std::endl;
         srand(time(NULL));
         init_menu(menu);
         init_back_ground(back_ground);
