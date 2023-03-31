@@ -11,6 +11,7 @@
 #include "Boss.h"
 #include "Present.h"
 #include <vector>
+#include "blackHole.h"
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_mixer.h>
@@ -20,6 +21,7 @@ extern Uint32 MAIN_OBJECT_startTicks;
 extern Uint32 MAIN_OBJECT_spriteIndex;
 extern const Uint32 MAIN_OBJECT_spritetime;
 class Boss;
+class blackHole;
 class Chicken;
 class MainObject
 {
@@ -27,10 +29,11 @@ protected:
     SDL_Texture *texture_;
     SDL_Rect rect_;
     bool is_win;
+    int spinning_angle;
     SDL_Rect frame_clip[MAIN_OBJECT_NUMS_FRAME];
     int witdth_of_sprite;
     int height_of_sprite;
-    std::vector<AmmoObject *> ammo_list;
+    std::vector<AmmoObject*> ammo_list;
     Mix_Chunk *shoot_sound;
     Mix_Chunk *eat_wing_sound;
     Mix_Chunk *hit_sound;
@@ -91,6 +94,7 @@ public:
 
     void processing_if_hit_by_boss(Boss *boss);
     void processing_if_hit_by_boss_egg(Boss *boss);
+
 
     int get_health() const { return health; }
     void set_health(const int &health) { this->health = health; }

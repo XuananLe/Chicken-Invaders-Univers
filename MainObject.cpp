@@ -9,6 +9,7 @@ MainObject::MainObject()
 {
     texture_ = NULL;
     is_win = false;
+    spinning_angle = 0;
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     shoot_sound = Mix_LoadWAV("res/sound/arrow_firing.wav");
     eat_wing_sound = Mix_LoadWAV("res/sound/GET_FOOD.wav");
@@ -59,8 +60,7 @@ void MainObject::load_animation_sprite(SDL_Renderer *renderer, const char *file)
 
 void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
 {
-    if (health <= 0)
-        return;
+    if (health <= 0) return;
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
     {

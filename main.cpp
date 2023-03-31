@@ -7,13 +7,14 @@
 #include "menu.h"
 #include "Asteroid.h"
 #include "Boss.h"
+#include "blackHole.h"
 #include "Chicken.h"
 
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 
-const int number_of_asteroid = 1;
-const int chicken_number = 3;
+const int number_of_asteroid = 15;
+const int chicken_number = 1;
 
 bool is_paused = false;
 bool player_want_to_play_again = false; // -1 mean don't want to play again , 1 mean want to play again
@@ -39,6 +40,8 @@ Chicken *chicken = new Chicken[chicken_number];
 Chicken *chicken2 = new Chicken[chicken_number];
 
 Boss *boss = new Boss[boss_number];
+
+blackHole *black_hole = new blackHole();
 
 Uint32 last_time_present_fall_down = SDL_GetTicks();
 
@@ -78,6 +81,11 @@ void init_back_ground(BackGround *back_ground)
 {
     back_ground->loading_background(renderer, "res/image/background(2).jpg");
     back_ground->set_speed(1);
+}
+
+void init_black_hole()
+{
+    black_hole->set_is_on_screen(true);
 }
 
 void init_asteroid(Asteroid *asteroid)
@@ -191,6 +199,7 @@ void init_chicken_level_1(Chicken *chicken)
         }
     }
 }
+
 
 void init_chicken_level_1_2(Chicken *chicken)
 {
@@ -315,6 +324,7 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         }
         if (is_paused == true)
             break;
+        
         player->handling_movement(event);
         player->handling_shooting(event);
     }
@@ -340,6 +350,8 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
     present->render();
     present->update();
+    
+    black_hole->render();
 
     player->processing_if_got_present(present);
     player->render_shooting();
@@ -449,9 +461,11 @@ int main(int argc, char *argv[])
 
     while (true)
     {
-        std::cout << "Hello world" << std::endl;
+        // =================<INIT>================
+        
         srand(time(NULL));
         init_menu(menu);
+        init_black_hole();
         init_back_ground(back_ground);
         init_chicken_level_1(chicken);
         init_chicken_level_1_2(chicken2);
@@ -463,6 +477,7 @@ int main(int argc, char *argv[])
         // =================<MENU>================
         Mix_AllocateChannels(100);
         play_music_level(level, background_music);
+        
         while (menu->get_game_has_started() == false)
         {
             menu->render_menu();
@@ -487,6 +502,7 @@ int main(int argc, char *argv[])
         while (level == 1)
         {
             common_process(player, present, event);
+
             process_chicken_vs_player(chicken, player);
             if (all_level_1_chicken_dead(chicken) == true && player->get_health() >= 1 && player_want_to_play_again == false)
             {
