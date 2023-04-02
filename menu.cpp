@@ -3,24 +3,10 @@ GameMenu::GameMenu()
 {
     TTF_Init();
     menu_texture = IMG_LoadTexture(renderer, "res/image/logo.png");
-    if (menu_texture == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     game_has_started = false;
     menu_rect.x = 0;
     transition_level = TTF_OpenFont("res/font/RopaSans-Italic.ttf", 100);
-    if (transition_level == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
-    // Set font hinting mode to TTF_HINTING_NORMAL
-    TTF_SetFontHinting(transition_level, TTF_HINTING_NORMAL);
-    // Enable font kerning
-    TTF_SetFontKerning(transition_level, 1);
     menu_rect.y = 0;
     menu_rect.w = SCREEN_WIDTH;
     menu_rect.h = SCREEN_HEIGHT;
@@ -31,28 +17,13 @@ GameMenu::GameMenu()
     before_level.y = SCREEN_HEIGHT / 2 - before_level.h / 2 - 300;
 
     health_bar_texture = IMG_LoadTexture(renderer, "res/image/hp_bar.png");
-    if (health_bar_texture == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
     health_bar.w = 300;
     health_bar.h = 30;
     health_bar.x = 0;
     health_bar.y = SCREEN_HEIGHT - health_bar.h;
 
     new_font = TTF_OpenFont("res/font/arial.ttf", 100);
-    if (new_font == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
     game_over = Mix_LoadWAV("res/sound/game_over.wav");
-    if (game_over == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << Mix_GetError() << std::endl;
-        exit(EXIT_SUCCESS);
-    }
 }
 GameMenu::~GameMenu()
 {
@@ -124,7 +95,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
         }
         if (1 <= x && x <= 390 && y >= 47 && y <= 90)
         {
-            const std::string url = "https://xuananle.github.io/demowebpage/";
+            const std::string url = "https://github.com/XuananLe";
             const std::string cmd = "xdg-open " + url;
             system(cmd.c_str());
             return;
@@ -151,21 +122,7 @@ void GameMenu::render_before_level(int level)
     SDL_Rect rect = {0, 0, before_level.w, before_level.h};
     SDL_BlitSurface(surface, &rect, blurred_surface, &rect);
 
-    if (transition_level == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << TTF_GetError() << std::endl;
-    }
-    if (surface == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
     before_level_texture = SDL_CreateTextureFromSurface(renderer, surface);
-    if (before_level_texture == NULL)
-    {
-        std::cout << "Error at file menu.cpp " << SDL_GetError() << std::endl;
-        exit(EXIT_FAILURE);
-    }
     SDL_FreeSurface(surface);
     SDL_RenderCopy(renderer, before_level_texture, NULL, &before_level);
 }
@@ -190,10 +147,10 @@ void GameMenu::render_game_over(MainObject *player)
 {
     if (player->get_health() > 0)
         return;
+
     std::string message = "GAME OVER";
-    // minutes and seconds
     std::string message2 = "YOU SURVIVED FOR " + std::string(time_text);
-    std::string message3 = "PRESS C TO CONTINUE";
+    std::string message3 = "PRESS C TO CONTINUE OR ESC TO EXIT";
 
     SDL_Rect next_line = {before_level.x - 100, before_level.y + 200, before_level.w + 200, before_level.h};
     SDL_Rect next_line2 = {before_level.x - 100, before_level.y + 400, before_level.w + 200, before_level.h};
@@ -205,16 +162,12 @@ void GameMenu::render_game_over(MainObject *player)
     SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
     SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
 
-    if (texture == nullptr || texture2 == nullptr || texture3 == nullptr)
-    {
-        std::cerr << "SDL_CreateTextureFromSurface failed: " << SDL_GetError() << std::endl;
-        SDL_FreeSurface(surface);
-        return;
-    }
     Mix_VolumeChunk(GameMenu::game_over, 12);
-    Mix_PlayChannelTimed(1, GameMenu::game_over,1,1000);
+    Mix_PlayChannelTimed(1, GameMenu::game_over, 1, 1000);
+
     SDL_FreeSurface(surface);
     SDL_FreeSurface(surface2);
+
     SDL_RenderCopy(renderer, texture2, NULL, &next_line);
     SDL_RenderCopy(renderer, texture3, NULL, &next_line2);
     SDL_RenderCopy(renderer, texture, NULL, &before_level);

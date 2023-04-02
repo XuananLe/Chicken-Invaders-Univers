@@ -20,6 +20,5 @@ public:
 
     void set_speed(double speed) {speed_ = speed;}
     double get_speed() {return speed_;}
-
 };
 #endif

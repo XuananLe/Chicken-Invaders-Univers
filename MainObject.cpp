@@ -10,6 +10,7 @@ MainObject::MainObject()
     texture_ = NULL;
     is_win = false;
     spinning_angle = 0;
+    got_hit_by_black_hole = false;
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     shoot_sound = Mix_LoadWAV("res/sound/arrow_firing.wav");
     eat_wing_sound = Mix_LoadWAV("res/sound/GET_FOOD.wav");
@@ -19,8 +20,8 @@ MainObject::MainObject()
     health = 3;
     ammo_level = 0;
     height_of_sprite = 0;
-    rect_.x = 0;
-    rect_.y = 0;
+    rect_.x = SCREEN_WIDTH / 2;
+    rect_.y = SCREEN_HEIGHT - 100;
     rect_.w = 0;
     rect_.h = 0;
 }
@@ -70,8 +71,17 @@ void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
     rect_.w = static_cast<int>(witdth_of_sprite * scale);
     rect_.h = static_cast<int>(height_of_sprite * scale);
     SDL_Rect destRect = {rect_.x, rect_.y, static_cast<int>(witdth_of_sprite * scale), static_cast<int>(height_of_sprite * scale)};
+    // rotate the sprite around center
+    if(got_hit_by_black_hole == true)
+    {   
+    SDL_Point center = {destRect.w / 2, destRect.h / 2};
+    SDL_RenderCopyEx(renderer, texture_, &frame_clip[MAIN_OBJECT_spriteIndex], &destRect, spinning_angle, &center, SDL_FLIP_NONE);
+    }
+    else
+    {
     // Render the current sprite
     SDL_RenderCopy(renderer, texture_, &frame_clip[MAIN_OBJECT_spriteIndex], &destRect);
+    }
 }
 
 // IMPLEMENT SET AND GET METHOD IN RECTANGLE
@@ -105,7 +115,7 @@ SDL_Rect MainObject::get_rect_width_height_with_scale(const double &scale) const
 // IMPLEMENT HANDLING MOVEMENT
 void MainObject::handling_movement(SDL_Event &event)
 {
-    if (health <= 0)
+    if (health <= 0 || got_hit_by_black_hole == true)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
@@ -472,4 +482,21 @@ void MainObject::free()
         rect_.h = 0;
         Mix_FreeChunk(shoot_sound);
     }
+}
+
+void MainObject::processing_if_hit_by_black_hole(blackHole* black_hole)
+{
+    // if(black_hole->get_is_on_screen() == false)
+    // {
+    //     got_hit_by_black_hole = false;
+    // }
+    // std::cout << "Black_hole coordinate "  << black_hole->get_black_hole_rect().x << "  " << black_hole->get_black_hole_rect().y << std::endl;
+    // // if (health <= 0 || black_hole->get_is_on_screen() == true || got_hit_by_black_hole == true)
+    // //     return;
+    // if (check_collision_2_rect(black_hole->get_black_hole_rect(), rect_) == true && black_hole->get_is_on_screen() == true)
+    // {
+    //     got_hit_by_black_hole = true;
+    //     black_hole->spinnning_for_10_secs();
+    //     black_hole->play_black_hole_sound();
+    // }
 }

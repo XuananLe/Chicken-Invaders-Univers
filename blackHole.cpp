@@ -59,9 +59,8 @@ void blackHole::spinnning_for_10_secs()
 {
     if (is_on_screen == false)
         return;
-
     Uint32 current_time = SDL_GetTicks();
-    black_hole_rect.y += 1;
+    black_hole_rect.y += 10;
     if(black_hole_rect.y > SCREEN_HEIGHT) is_on_screen = false;
     if (current_time - last_time_spinning > 10000)
     {

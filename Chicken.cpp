@@ -253,14 +253,14 @@ void Chicken::handle_shooting_eggs_toward_player(MainObject *main_object)
         return;
     }
     Uint32 current_time = SDL_GetTicks();
-    if (current_time - last_egg_time_ < 3000)
+    if (current_time - last_egg_time_ < 5 * 1000)
     { // Only lay egg every 5 seconds
         return;
     }
 
     int rand_num = rand() % 100 + 1;
     last_egg_time_ = current_time;
-    if (rand_num <= 90)
+    if (rand_num <= 40)
     { 
         // 95% chance of laying egg
         double dx = main_object->get_rect().x - rect_.x;
@@ -344,7 +344,7 @@ void Chicken::generate_present()
 }
 
 void Chicken::moving_diagnoally()
-{
+{    
     rect_.x += v_x * dir_x;
     rect_.y += v_y * dir_y;
     if (rect_.x < 0)

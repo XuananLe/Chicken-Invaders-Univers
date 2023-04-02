@@ -30,10 +30,10 @@ public:
     bool get_is_on_screen() { return is_on_screen;}
     void play_black_hole_sound()
     {
+        if(is_on_screen == false) return;
         Mix_VolumeChunk(black_hole_sound, 2); // Reduce volume by 50%
         Mix_PlayChannelTimed(-1, black_hole_sound, 1, 1000);
     }
-
     void spinnning_for_10_secs();
     SDL_Texture *get_black_hole_texture() { return black_hole_texture; }
 };

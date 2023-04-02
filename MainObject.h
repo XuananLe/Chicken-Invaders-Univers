@@ -29,6 +29,7 @@ protected:
     SDL_Texture *texture_;
     SDL_Rect rect_;
     bool is_win;
+    bool got_hit_by_black_hole;
     int spinning_angle;
     SDL_Rect frame_clip[MAIN_OBJECT_NUMS_FRAME];
     int witdth_of_sprite;
@@ -109,6 +110,10 @@ public:
     {
         return MainObject::is_win;
     }
+
+    int get_got_hit_by_black_hole() const { return got_hit_by_black_hole; }
+
+    void processing_if_hit_by_black_hole(blackHole *black_hole);
 
 };
 #endif

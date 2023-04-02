@@ -13,11 +13,10 @@
 const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 
-const int number_of_asteroid = 15;
-const int chicken_number = 1;
-
+const int number_of_asteroid = 30;
+const int chicken_number = 24;
 bool is_paused = false;
-bool player_want_to_play_again = false; // -1 mean don't want to play again , 1 mean want to play again
+bool player_want_to_play_again = false; 
 int level = 0;
 const int boss_number = 2;
 Mix_Music *background_music = NULL;
@@ -92,9 +91,18 @@ void init_asteroid(Asteroid *asteroid)
 {
     for (int i = 0; i < number_of_asteroid; i++)
     {
-        asteroid[i].set_width_height(75, 68);
-        asteroid[i].set_is_on_screen(true);
-        asteroid[i].set_speed(2);
+        if (asteroid[i].get_is_on_screen() == false || asteroid[i].get_health() <= 0)
+        {
+            asteroid[i].set_width_height(75, 68);
+            asteroid[i].set_is_on_screen(true);
+            asteroid[i].set_speed(2);
+        }
+        else
+        {
+            asteroid[i].set_width_height(75, 68);
+            asteroid[i].set_is_on_screen(true);
+            asteroid[i].set_speed(2);
+        }
     }
 }
 
@@ -153,53 +161,33 @@ bool all_boss_dead(Boss *boss)
 
 void init_chicken_level_1(Chicken *chicken)
 {
-    for (int i = 0; i < chicken_number / 3; i++)
+    for (int j = 0; j < 3; j++)
     {
-        chicken[i].generate_present();
-        chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
-        chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + i * 100, -100);
-        chicken[i].set_rect_width_and_height(75, 68);
-        chicken[i].set_alive(true);
-        chicken[i].set_speed(3);
-        if (chicken[i].get_texture() == NULL)
+        for (int i = (j * chicken_number) / 3; i < ((j + 1) * chicken_number) / 3; i++)
         {
-            std::cout << "Chicken texture is not null" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-    }
-    for (int i = chicken_number / 3; i < 2 * (chicken_number / 3); i++)
-    {
-        chicken[i].generate_present();
-        chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
-        chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + (i - (chicken_number / 3)) * 100, 0);
-        chicken[i].set_rect_width_and_height(75, 68);
-        chicken[i].set_alive(true);
-        chicken[i].set_speed(3);
-        if (chicken[i].get_texture() == NULL)
-        {
-            std::cout << "Chicken texture is not null" << std::endl;
-            exit(EXIT_FAILURE);
-        }
-    }
-    for (int i = 2 * chicken_number / 3; i < chicken_number; i++)
-    {
-        chicken[i].generate_present();
-        chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
-        chicken[i].set_clips();
-        chicken[i].set_rect_cordinate(100 + (i - (2 * chicken_number / 3)) * 100, 100);
-        chicken[i].set_rect_width_and_height(75, 68);
-        chicken[i].set_alive(true);
-        chicken[i].set_speed(3);
-        if (chicken[i].get_texture() == NULL)
-        {
-            std::cout << "Chicken texture is not null" << std::endl;
-            exit(EXIT_FAILURE);
+            if (chicken->get_health() <= 0)
+            {
+                chicken[i].set_health(3);
+                chicken[i].set_on_screen(true);
+                chicken[i].set_alive(true);
+            }
+            chicken[i].generate_present();
+            chicken[i].set_health(3);
+            chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
+            chicken[i].set_clips();
+            chicken[i].set_rect_cordinate(100 + (i - (j * chicken_number / 3)) * 100, j * 100 - 100);
+            chicken[i].set_rect_width_and_height(75, 68);
+            chicken[i].set_alive(true);
+            chicken[i].set_speed(3);
+            std::cout << i << "         " << chicken[i].get_rect().x << "   " << chicken[i].get_rect().y << std::endl;
+            if (chicken[i].get_texture() == NULL)
+            {
+                std::cout << "Chicken texture is not null" << std::endl;
+                exit(EXIT_FAILURE);
+            }
         }
     }
 }
-
 
 void init_chicken_level_1_2(Chicken *chicken)
 {
@@ -251,6 +239,12 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
         player->process_if_hit_by_eggs(&chicken[i]);
         player->process_if_eat_wing_rect(&chicken[i]);
     }
+}
+
+void process_black_hole_vs_player(blackHole *black_hole, MainObject *player)
+{
+    // player->processing_if_hit_by_black_hole(black_hole);
+    // black_hole->render();
 }
 
 void play_music_level(int level, Mix_Music *music)
@@ -317,14 +311,14 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
             {
                 exit(EXIT_SUCCESS);
             }
-            if(player->get_health() <= 0 && player_want_to_play_again == false && event.key.keysym.sym == SDLK_c)
+            if (player->get_health() <= 0 && player_want_to_play_again == false && event.key.keysym.sym == SDLK_c)
             {
                 player_want_to_play_again = !player_want_to_play_again;
             }
         }
         if (is_paused == true)
             break;
-        
+
         player->handling_movement(event);
         player->handling_shooting(event);
     }
@@ -344,14 +338,13 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         last_time_present_fall_down = current_time;
     }
 
+
     back_ground->render_background_scroll(renderer);
     back_ground->update_background_scroll();
-    back_ground->set_speed(2);
+
 
     present->render();
     present->update();
-    
-    black_hole->render();
 
     player->processing_if_got_present(present);
     player->render_shooting();
@@ -390,6 +383,7 @@ void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
         player->process_if_hit_by_asteroid(&asteroid[i]);
     }
 } //
+
 void intro_before_level(int level)
 {
     Uint32 current_time = SDL_GetTicks();
@@ -462,7 +456,7 @@ int main(int argc, char *argv[])
     while (true)
     {
         // =================<INIT>================
-        
+
         srand(time(NULL));
         init_menu(menu);
         init_black_hole();
@@ -477,7 +471,7 @@ int main(int argc, char *argv[])
         // =================<MENU>================
         Mix_AllocateChannels(100);
         play_music_level(level, background_music);
-        
+
         while (menu->get_game_has_started() == false)
         {
             menu->render_menu();
@@ -494,6 +488,7 @@ int main(int argc, char *argv[])
         }
 
         // ===============<LEVEL 1>================
+
         level = 1;
 
         play_music_level(level, background_music);
@@ -508,16 +503,18 @@ int main(int argc, char *argv[])
             {
                 level++;
             }
-            else if(player_want_to_play_again == true && player->get_health() <= 0)
+            else if (player_want_to_play_again == true && player->get_health() <= 0)
             {
                 level = 1;
                 player_want_to_play_again = false;
-                player->set_health(3);    
-                init_chicken_level_1(chicken);            
+                player->set_health(3);
+                player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
+                init_chicken_level_1(chicken);
             }
             menu_process_player_related_event();
             update_game_state();
         }
+
         // ===============<LEVEL 2>================
 
         intro_before_level(level);
@@ -526,9 +523,16 @@ int main(int argc, char *argv[])
         {
             common_process(player, present, event);
             process_astroid_vs_player(asteroid, player);
-            if (all_level_2_asteroid_dead(asteroid) == true)
+            if (all_level_2_asteroid_dead(asteroid) == true && player->get_health() >= 1 && player_want_to_play_again == false)
             {
                 level++;
+            }
+            else if (player->get_health() <= 0 && player_want_to_play_again == true)
+            {
+                level = 2;
+                player->set_health(3);
+                player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
+                init_asteroid(asteroid);
             }
             menu_process_player_related_event();
             update_game_state();
