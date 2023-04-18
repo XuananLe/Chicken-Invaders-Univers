@@ -8,7 +8,7 @@ const Uint32 CHICKEN_spritetime = 50;
 // IMPLEMENTATION OF CONSTRUCTOR AND DESTRUCTOR
 Chicken::Chicken()
 {
-    health_ = 3;
+    health_ = 20;
     speed_ = 10;
     radius_ = 500;
     angle_increment = 2;
@@ -349,7 +349,6 @@ void Chicken::moving_diagnoally()
     rect_.y += v_y * dir_y;
     if (rect_.x < 0)
     {
-
         dir_x = 1;
     }
     else if (rect_.x + rect_.w > SCREEN_WIDTH)

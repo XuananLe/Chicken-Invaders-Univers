@@ -7,18 +7,7 @@
 #include "menu.h"
 #include "Asteroid.h"
 #include "Boss.h"
-#include "blackHole.h"
 #include "Chicken.h"
-
-const double MAIN_OBJECT_SCALE = 0.35;
-const double CHICKEN_OBJECT_SCALE = 1.55;
-
-const int number_of_asteroid = 30;
-const int chicken_number = 24;
-bool is_paused = false;
-bool player_want_to_play_again = false; 
-int level = 0;
-const int boss_number = 2;
 Mix_Music *background_music = NULL;
 
 // ======================= Enity Variable ======================= \\
@@ -39,8 +28,6 @@ Chicken *chicken = new Chicken[chicken_number];
 Chicken *chicken2 = new Chicken[chicken_number];
 
 Boss *boss = new Boss[boss_number];
-
-blackHole *black_hole = new blackHole();
 
 Uint32 last_time_present_fall_down = SDL_GetTicks();
 
@@ -80,11 +67,6 @@ void init_back_ground(BackGround *back_ground)
 {
     back_ground->loading_background(renderer, "res/image/background(2).jpg");
     back_ground->set_speed(1);
-}
-
-void init_black_hole()
-{
-    black_hole->set_is_on_screen(true);
 }
 
 void init_asteroid(Asteroid *asteroid)
@@ -151,7 +133,7 @@ bool all_boss_dead(Boss *boss)
 {
     for (int i = 0; i < boss_number; i++)
     {
-        if (boss[i].get_health() > 0)
+        if (boss[i].get_health() >= 1)
         {
             return false;
         }
@@ -167,22 +149,19 @@ void init_chicken_level_1(Chicken *chicken)
         {
             if (chicken->get_health() <= 0)
             {
-                chicken[i].set_health(3);
                 chicken[i].set_on_screen(true);
                 chicken[i].set_alive(true);
             }
             chicken[i].generate_present();
-            chicken[i].set_health(3);
             chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
             chicken[i].set_clips();
             chicken[i].set_rect_cordinate(100 + (i - (j * chicken_number / 3)) * 100, j * 100 - 100);
             chicken[i].set_rect_width_and_height(75, 68);
             chicken[i].set_alive(true);
             chicken[i].set_speed(3);
-            std::cout << i << "         " << chicken[i].get_rect().x << "   " << chicken[i].get_rect().y << std::endl;
             if (chicken[i].get_texture() == NULL)
             {
-                std::cout << "Chicken texture is not null" << std::endl;
+                std::cout << "Chicken texture is NULL" << std::endl;
                 exit(EXIT_FAILURE);
             }
         }
@@ -241,12 +220,6 @@ void process_chicken_vs_player(Chicken *chicken, MainObject *player)
     }
 }
 
-void process_black_hole_vs_player(blackHole *black_hole, MainObject *player)
-{
-    // player->processing_if_hit_by_black_hole(black_hole);
-    // black_hole->render();
-}
-
 void play_music_level(int level, Mix_Music *music)
 {
     if (is_paused == true)
@@ -254,45 +227,42 @@ void play_music_level(int level, Mix_Music *music)
     if (level == 0)
     {
         music = Mix_LoadMUS("res/sound/MENU_THEME.mp3");
-        if (music == NULL)
-        {
-            std::cout << "Music is not loaded" << std::endl;
-            exit(EXIT_FAILURE);
-        }
+        Mix_VolumeMusic(20);
         Mix_PlayMusic(music, -1);
     }
     if (level == 1)
     {
         music = Mix_LoadMUS("res/sound/level_1_theme.mp3");
-        if (music == NULL)
-        {
-            std::cout << "Music is not loaded" << std::endl;
-            exit(EXIT_FAILURE);
-        }
+        Mix_VolumeMusic(20);
         Mix_PlayMusic(music, -1);
     }
     if (level == 2)
     {
         music = Mix_LoadMUS("res/sound/asteroid_level.mp3");
-        if (music == NULL)
-        {
-            std::cout << "Music is not loaded" << std::endl;
-            exit(EXIT_FAILURE);
-        }
+        Mix_VolumeMusic(20);
         Mix_PlayMusic(music, -1);
     }
     if (level == 3)
     {
         music = Mix_LoadMUS("res/sound/boss_theme.mp3");
+        Mix_VolumeMusic(20);
+        Mix_PlayMusic(music, -1);
+    }
+    if (level == 4 && player->get_health() >= 1)
+    {
+        music = Mix_LoadMUS("res/sound/game_win.wav");
+        Mix_VolumeMusic(20);
         if (music == NULL)
         {
-            std::cout << "Music is not loaded" << std::endl;
-            exit(EXIT_FAILURE);
+            std::cout << "Music is null" << std::endl;
+            exit(0);
         }
         Mix_PlayMusic(music, -1);
+        return;
     }
 }
 
+// RENDERING BACKGROUND AND PLAYER SHOOTING
 void common_process(MainObject *player, Present *present, SDL_Event &event)
 {
     while (SDL_PollEvent(&event))
@@ -311,13 +281,14 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
             {
                 exit(EXIT_SUCCESS);
             }
-            if (player->get_health() <= 0 && player_want_to_play_again == false && event.key.keysym.sym == SDLK_c)
+            if (player->get_health() <= 0 && player_want_to_play_again == false && event.key.keysym.sym == SDLK_c && level != 4)
             {
                 player_want_to_play_again = !player_want_to_play_again;
+                times_player_want_to_playagain++;
             }
         }
         if (is_paused == true)
-            break;
+            return;
 
         player->handling_movement(event);
         player->handling_shooting(event);
@@ -338,10 +309,8 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         last_time_present_fall_down = current_time;
     }
 
-
     back_ground->render_background_scroll(renderer);
     back_ground->update_background_scroll();
-
 
     present->render();
     present->update();
@@ -355,12 +324,15 @@ void init_boss(Boss *boss)
 {
     if (is_paused == true)
         return;
-    boss[0].load_animation_sprite(renderer, "res/image/boss.png");
-    boss[0].set_clips();
+    for (int i = 0; i < boss_number; i++)
+    {
+        boss[i].set_health(100);
+        boss[i].set_on_screen(true);
+        boss[i].load_animation_sprite(renderer, "res/image/boss.png");
+        boss[i].set_clips();
+    }
     boss[0].set_rect_cordinate(100, 100);
-    boss[1].load_animation_sprite(renderer, "res/image/boss.png");
-    boss[1].set_clips();
-    boss[1].set_rect_cordinate(SCREEN_WIDTH - 100, 100);
+    boss[1].set_rect_cordinate(700, 100);
 }
 
 void init_menu(GameMenu *menu)
@@ -409,13 +381,14 @@ void process_boss_vs_player(Boss *boss, MainObject *player)
 {
     if (is_paused == true)
         return;
-    for (int i = 0; i < boss_number; i++)
+    for (int i = 0; i < 1; i++)
     {
         boss[i].render_animation(renderer, 1);
         boss[i].render_health_bar();
         if (player->get_health() <= 0)
             return;
         boss[i].moving_toward_player(player);
+        // std::cout << boss[i].get_rect().x << " " << boss[i].get_rect().y << std::endl;
         boss[i].firing_eggs();
         boss[i].update_the_eggs();
         boss[i].render_the_eggs();
@@ -428,7 +401,7 @@ void menu_process_player_related_event()
 {
     if (menu != NULL)
     {
-        if (is_paused == false && player->get_health() > 0 && menu->get_game_has_started() == true)
+        if (is_paused == false && player->get_health() > 0 && menu->get_game_has_started() == true && level != 4)
         {
             menu->render_time(player);
         }
@@ -440,8 +413,11 @@ void menu_process_player_related_event()
     {
         menu->render_game_over(player);
     }
-    else
-        return;
+    else if (player->get_health() >= 1 && level == 4)
+    {
+        menu->render_game_over(player);
+        menu->render_game_win(player);
+    }
 }
 
 // ==================== MAIN ====================
@@ -459,7 +435,6 @@ int main(int argc, char *argv[])
 
         srand(time(NULL));
         init_menu(menu);
-        init_black_hole();
         init_back_ground(back_ground);
         init_chicken_level_1(chicken);
         init_chicken_level_1_2(chicken2);
@@ -492,6 +467,7 @@ int main(int argc, char *argv[])
         level = 1;
 
         play_music_level(level, background_music);
+        Mix_VolumeMusic(10);
         intro_before_level(level);
 
         while (level == 1)
@@ -508,6 +484,7 @@ int main(int argc, char *argv[])
                 level = 1;
                 player_want_to_play_again = false;
                 player->set_health(3);
+                player->set_ammo_level(0);
                 player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
                 init_chicken_level_1(chicken);
             }
@@ -518,6 +495,7 @@ int main(int argc, char *argv[])
         // ===============<LEVEL 2>================
 
         intro_before_level(level);
+        Mix_VolumeMusic(10);
         play_music_level(level, background_music);
         while (level == 2)
         {
@@ -531,6 +509,8 @@ int main(int argc, char *argv[])
             {
                 level = 2;
                 player->set_health(3);
+                player->set_ammo_level(0);
+                player_want_to_play_again = false;
                 player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
                 init_asteroid(asteroid);
             }
@@ -541,19 +521,35 @@ int main(int argc, char *argv[])
         // ===============<LEVEL 3>================
 
         intro_before_level(level);
+        Mix_VolumeMusic(10);
         play_music_level(level, background_music);
 
         while (level == 3)
         {
             common_process(player, present, event);
             process_boss_vs_player(boss, player);
-            if (all_boss_dead(boss) == true || player->get_health() >= 0)
+            if (all_boss_dead(boss) == true && player->get_health() >= 1 && player_want_to_play_again == false)
             {
+                level++;
+            }
+            else if (player->get_health() <= 0 && player_want_to_play_again == true)
+            {
+                level = 3;
+                player->set_ammo_level(0);
+                player->set_health(3);
+                player_want_to_play_again = false;
+                player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
+                init_boss(boss);
             }
             menu_process_player_related_event();
             update_game_state();
         }
-        // FREEING METHOD AND QUITTING
+        while (level == 4)
+        {
+            common_process(player, present, event);
+            menu_process_player_related_event();
+            update_game_state();
+        }
     }
     player->free();
     chicken->free();

@@ -4,13 +4,17 @@
 #include "Chicken.h"
 #include "Egg.h"
 #include "MainObject.h"
-#include <vector>
+#include <algorithm>
+
 extern const double BOSS_SCALE;
 const int BOSS_NUMS_FRAME = 10;
 extern Uint32 BOSS_startTicks;
+extern const double ATTACK_DISTANCE_SQUARED;
+extern const Uint32 MOVE_INTERVAL_MS; // Move every 100 milliseconds
 extern const Uint32 BOSS_NUMBER_OF_EGGS;
 extern Uint32 BOSS_spriteIndex;
 extern const Uint32 BOSS_spritetime;
+extern double lerp(double a, double b, double t);
 class MainObject;
 class Boss
 {
@@ -43,6 +47,9 @@ protected:
     Uint32 last_fire_ticks_; // the last time the boss fired
     Mix_Chunk *shooting_egg_sound_;
     Mix_Chunk *boss_shit;
+    int dir_x;
+    int dir_y;
+    std::string prev_collision_dir_;
 
 public:
     Boss();
@@ -101,13 +108,11 @@ public:
     bool get_on_screen() const { return is_on_screen; }
     void set_health(const int &health) { health_ = health; }
     int get_health() const { return health_; }
-    void move_randomly_up_down_left_right();
-    void firing_eggs(MainObject *main_object);
+    
     void moving_toward_player(MainObject *main_object);
-    void moving_toward_player();
+    
     void firing_eggs();
-    void moving_like_zigzag();
-
+    
     void update_the_eggs()
     {
         for (int i = 0; i < egg_list.size(); i++)

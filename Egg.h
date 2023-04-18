@@ -10,6 +10,7 @@ protected:
     bool is_broken; // a flag to indicate if the egg is broken
     SDL_Rect rect_;
     int speed_;
+    int spinning_egg;
     int v_x;
     int v_y;
     bool alive_ = true; // a flag to indicate if the egg is alive

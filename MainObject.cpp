@@ -3,14 +3,13 @@
 #include <memory>
 Uint32 MAIN_OBJECT_startTicks = 0;
 Uint32 MAIN_OBJECT_spriteIndex = 0;
-const Uint32 MAIN_OBJECT_spritetime = 50;
+const Uint32 MAIN_OBJECT_spritetime = 100;
 // IMPLEMENT CONSTRUTOR AND DESTRUCTOR
 MainObject::MainObject()
 {
     texture_ = NULL;
     is_win = false;
     spinning_angle = 0;
-    got_hit_by_black_hole = false;
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048);
     shoot_sound = Mix_LoadWAV("res/sound/arrow_firing.wav");
     eat_wing_sound = Mix_LoadWAV("res/sound/GET_FOOD.wav");
@@ -61,7 +60,8 @@ void MainObject::load_animation_sprite(SDL_Renderer *renderer, const char *file)
 
 void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
 {
-    if (health <= 0) return;
+    if (health <= 0)
+        return;
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
     {
@@ -70,18 +70,10 @@ void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
     }
     rect_.w = static_cast<int>(witdth_of_sprite * scale);
     rect_.h = static_cast<int>(height_of_sprite * scale);
+
     SDL_Rect destRect = {rect_.x, rect_.y, static_cast<int>(witdth_of_sprite * scale), static_cast<int>(height_of_sprite * scale)};
-    // rotate the sprite around center
-    if(got_hit_by_black_hole == true)
-    {   
-    SDL_Point center = {destRect.w / 2, destRect.h / 2};
-    SDL_RenderCopyEx(renderer, texture_, &frame_clip[MAIN_OBJECT_spriteIndex], &destRect, spinning_angle, &center, SDL_FLIP_NONE);
-    }
-    else
-    {
-    // Render the current sprite
+
     SDL_RenderCopy(renderer, texture_, &frame_clip[MAIN_OBJECT_spriteIndex], &destRect);
-    }
 }
 
 // IMPLEMENT SET AND GET METHOD IN RECTANGLE
@@ -112,10 +104,11 @@ SDL_Rect MainObject::get_rect_width_height_with_scale(const double &scale) const
     return rect;
 }
 
+
 // IMPLEMENT HANDLING MOVEMENT
 void MainObject::handling_movement(SDL_Event &event)
 {
-    if (health <= 0 || got_hit_by_black_hole == true)
+    if (health <= 0)
         return;
     if (event.type == SDL_MOUSEMOTION)
     {
@@ -169,46 +162,51 @@ void MainObject::handling_shooting(SDL_Event &event)
             AmmoObject *ammo = new AmmoObject();
             std::string path = "res/image/";
             std::string ammo_type_123 = "";
+            // Set ammo type
             if (ammo_type == 2)
             {
                 ammo_type_123 = "BORON";
                 ammo->set_speed(10);
-                if (MainObject::ammo_level == 0)
+                switch (MainObject::ammo_level)
                 {
+                case 0:
                     ammo->set_damage(2);
-                }
-                else if (MainObject::ammo_level == 1)
-                {
+                    break;
+                case 1:
                     ammo->set_damage(3);
-                }
-                else if (MainObject::ammo_level == 2)
-                {
+                    break;
+                case 2:
                     ammo->set_damage(4);
-                }
-                else if (MainObject::ammo_level == 3)
-                {
+                    break;
+                case 3:
                     ammo->set_damage(5);
+                    break;
+                default:
+                    ammo->set_damage(0);
+                    break;
                 }
             }
             else if (ammo_type == 1)
             {
                 ammo_type_123 = "NEUTRON";
                 ammo->set_speed(20);
-                if (MainObject::ammo_level == 0)
+                switch (MainObject::ammo_level)
                 {
+                case 0:
                     ammo->set_damage(1);
-                }
-                else if (MainObject::ammo_level == 1)
-                {
+                    break;
+                case 1:
                     ammo->set_damage(2);
-                }
-                else if (MainObject::ammo_level == 2)
-                {
+                    break;
+                case 2:
                     ammo->set_damage(3);
-                }
-                else if (MainObject::ammo_level == 3)
-                {
+                    break;
+                case 3:
                     ammo->set_damage(4);
+                    break;
+                default:
+                    ammo->set_damage(0);
+                    break;
                 }
             }
             else
@@ -225,12 +223,13 @@ void MainObject::handling_shooting(SDL_Event &event)
                 std::cout << IMG_GetError() << std::endl;
                 exit(0);
             }
-            
+
             ammo->set_alive(true);
             ammo->set_can_move(true);
             ammo->set_rect_cordinate(rect_.x + rect_.w / 2 - 10, rect_.y);
             ammo_list.push_back(ammo);
 
+            Mix_VolumeChunk(shoot_sound, 12);
             if (Mix_PlayChannel(-1, shoot_sound, 0) == -1)
             {
                 printf("Unable to play WAV file: %s\n", Mix_GetError());
@@ -318,6 +317,12 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
         return;
     if ((chicken->get_health() != 0) && (check_collision_2_rect(chicken->get_rect(), rect_) == true) && (chicken->get_on_screen() == true))
     {
+        Explosion *explosion = new Explosion();
+        explosion->set_is_on_screen(true);
+        explosion->load_animation_sprite(renderer, "res/image/explosion.png");
+        explosion->set_clips();
+        explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
+        explosion->render_animation(renderer);
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
         Mix_VolumeChunk(hit_sound, 64);
@@ -328,6 +333,7 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
         return;
     }
 }
+
 void MainObject::process_if_hit_by_eggs(Chicken *chicken)
 {
     if (health <= 0)
@@ -338,15 +344,23 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
         {
             if (chicken->get_eggs_list()[i]->get_alive() == false)
                 return;
+            Explosion *explosion = new Explosion();
+            explosion->set_is_on_screen(true);
+            explosion->load_animation_sprite(renderer, "res/image/explosion.png");
+            explosion->set_clips();
+            explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
+            explosion->render_animation(renderer);
             // early return technique
             Mix_AllocateChannels(100);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
+            Mix_VolumeChunk(hit_sound, 80);
             health = health - 1;
             chicken->get_eggs_list()[i]->set_alive(false);
             return;
         }
     }
 }
+
 void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
 {
     if (health <= 0)
@@ -357,9 +371,15 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
         {
             if (boss->get_egg_list()[i]->get_alive() == false)
                 return;
+            Explosion *explosion = new Explosion();
+            explosion->set_is_on_screen(true);
+            explosion->load_animation_sprite(renderer, "res/image/explosion.png");
+            explosion->set_clips();
+            explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
+            explosion->render_animation(renderer);
             // early return technique
             Mix_AllocateChannels(100);
-            Mix_VolumeChunk(hit_sound, 30);
+            Mix_VolumeChunk(hit_sound, 80);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
             MainObject::health = MainObject::health - 1;
             boss->get_egg_list()[i]->set_alive(false);
@@ -367,15 +387,20 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
         }
     }
 }
+
 void MainObject::processing_if_hit_by_boss(Boss *boss)
 {
-    if (health <= 0)
-        return;
-    if (boss->get_on_screen() == false)
+    if (health <= 0 || boss->get_health() <= 0)
         return;
 
     if (check_collision_2_rect(boss->get_rect(), rect_) == true)
     {
+        Explosion *explosion = new Explosion();
+        explosion->set_is_on_screen(true);
+        explosion->load_animation_sprite(renderer, "res/image/explosion.png");
+        explosion->set_clips();
+        explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
+        explosion->render_animation(renderer);
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
         health = health - 1;
@@ -395,6 +420,7 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
         }
     }
 }
+
 void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
 {
     if (health <= 0)
@@ -404,6 +430,12 @@ void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
         Mix_AllocateChannels(100);
         MainObject::health--;
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
+        Explosion *explosion = new Explosion();
+        explosion->set_is_on_screen(true);
+        explosion->load_animation_sprite(renderer, "res/image/explosion.png");
+        explosion->set_clips();
+        explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
+        explosion->render_animation(renderer);
         asteroid->set_health(-1);
         asteroid->set_is_on_screen(false);
         asteroid->set_rect_cordinate_and_width_height(-9999, -9999, 0, 0);
@@ -452,8 +484,9 @@ void MainObject::processing_if_got_present(Present *present)
             {
                 MainObject::ammo_type = 1;
             }
-            else MainObject::ammo_type = 2;
-            
+            else
+                MainObject::ammo_type = 2;
+
             if (MainObject::ammo_level < 3)
             {
                 MainObject::ammo_level = MainObject::ammo_level + 1;
@@ -482,21 +515,4 @@ void MainObject::free()
         rect_.h = 0;
         Mix_FreeChunk(shoot_sound);
     }
-}
-
-void MainObject::processing_if_hit_by_black_hole(blackHole* black_hole)
-{
-    // if(black_hole->get_is_on_screen() == false)
-    // {
-    //     got_hit_by_black_hole = false;
-    // }
-    // std::cout << "Black_hole coordinate "  << black_hole->get_black_hole_rect().x << "  " << black_hole->get_black_hole_rect().y << std::endl;
-    // // if (health <= 0 || black_hole->get_is_on_screen() == true || got_hit_by_black_hole == true)
-    // //     return;
-    // if (check_collision_2_rect(black_hole->get_black_hole_rect(), rect_) == true && black_hole->get_is_on_screen() == true)
-    // {
-    //     got_hit_by_black_hole = true;
-    //     black_hole->spinnning_for_10_secs();
-    //     black_hole->play_black_hole_sound();
-    // }
 }

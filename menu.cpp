@@ -68,7 +68,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
-        std::cout << x << " " << y << std::endl;
+        // std::cout << x << " " << y << std::endl;
     }
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -147,9 +147,17 @@ void GameMenu::render_game_over(MainObject *player)
 {
     if (player->get_health() > 0)
         return;
-
-    std::string message = "GAME OVER";
-    std::string message2 = "YOU SURVIVED FOR " + std::string(time_text);
+    const int player_level = level;
+    std::string message = "";
+    if(player_level == 4)
+    {
+        message = "YOU WON THE GAME";
+    }
+    else
+    {
+        message = "GAME OVER";
+    }
+    std::string message2 = "YOU HAVE SURVIVED FOR " + std::string(time_text);
     std::string message3 = "PRESS C TO CONTINUE OR ESC TO EXIT";
 
     SDL_Rect next_line = {before_level.x - 100, before_level.y + 200, before_level.w + 200, before_level.h};
@@ -162,6 +170,7 @@ void GameMenu::render_game_over(MainObject *player)
     SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
     SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
 
+
     Mix_VolumeChunk(GameMenu::game_over, 12);
     Mix_PlayChannelTimed(1, GameMenu::game_over, 1, 1000);
 
@@ -171,4 +180,8 @@ void GameMenu::render_game_over(MainObject *player)
     SDL_RenderCopy(renderer, texture2, NULL, &next_line);
     SDL_RenderCopy(renderer, texture3, NULL, &next_line2);
     SDL_RenderCopy(renderer, texture, NULL, &before_level);
+}
+void GameMenu::render_game_win(MainObject *player)
+{
+     
 }

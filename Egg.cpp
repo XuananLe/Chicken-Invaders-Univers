@@ -11,6 +11,7 @@ Egg::Egg()
     last_time_eggs_broken = SDL_GetTicks();
     nice_egg = IMG_LoadTexture(renderer, "res/image/egg.png");
     broken_egg = IMG_LoadTexture(renderer, "res/image/egg2.png");
+    spinning_egg = 0;
 }
 Egg::~Egg()
 {
@@ -56,7 +57,12 @@ void Egg::render()
         return;
     if (is_broken == false)
     {
-        SDL_RenderCopy(renderer, nice_egg, NULL, &rect_);
+        spinning_egg += 5;
+        if (spinning_egg >= 360)
+            spinning_egg = 0;
+
+        SDL_Point center = {rect_.w / 2, rect_.h / 2};
+        SDL_RenderCopyEx(renderer,  nice_egg, NULL, &rect_, spinning_egg, &center, SDL_FLIP_NONE);
         last_time_eggs_broken = SDL_GetTicks();
     }
     else

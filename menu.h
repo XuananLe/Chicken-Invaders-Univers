@@ -27,6 +27,7 @@ protected:
     Uint32 elapsed_time = 0;
     bool game_has_started;
     char time_text[16];
+    Mix_Chunk *game_win = Mix_LoadWAV("res/sound/game_win.wav");
     Mix_Chunk *game_over = Mix_LoadWAV("res/sound/game_over.wav");
 public:
     GameMenu();
@@ -37,6 +38,7 @@ public:
     void render_before_level(int level);
     void set_game_has_started(const bool & state){game_has_started = state;}
     void render_menu();
+    void render_game_win(MainObject* player);
     void render_game_over(MainObject* player);
     void render_health_bar(MainObject* player);
     void render_time(MainObject* player);
