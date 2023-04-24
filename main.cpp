@@ -314,6 +314,12 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
     present->render();
     present->update();
+
+    std::cout << player->get_rect().x << " " << player->get_rect().y << std::endl;
+
+    player->processing_if_got_present(present);
+    player->render_shooting();
+    player->render_animation(renderer, MAIN_OBJECT_SCALE);
     for (int i = 0; i < player->explosion_list.size(); i++)
     {
         player->explosion_list[i]->render_animation(renderer);
@@ -324,10 +330,6 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
             i--;
         }
     }
-
-    player->processing_if_got_present(present);
-    player->render_shooting();
-    player->render_animation(renderer, MAIN_OBJECT_SCALE);
 }
 
 void init_boss(Boss *boss)

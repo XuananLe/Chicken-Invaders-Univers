@@ -24,6 +24,7 @@ MainObject::MainObject()
     rect_.y = SCREEN_HEIGHT - 100;
     rect_.w = 0;
     rect_.h = 0;
+    slow_move_timer = SDL_GetTicks();
 }
 MainObject::~MainObject()
 {
@@ -63,6 +64,11 @@ void MainObject::render_animation(SDL_Renderer *renderer, const double &scale)
 {
     if (health <= 0)
         return;
+    if(slow_move == true)
+    {
+        slowly_move_from_bottom();
+        return;
+    }
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
     {
@@ -108,8 +114,9 @@ SDL_Rect MainObject::get_rect_width_height_with_scale(const double &scale) const
 // IMPLEMENT HANDLING MOVEMENT
 void MainObject::handling_movement(SDL_Event &event)
 {
-    if (health <= 0)
+    if (health <= 0 || slow_move == true)
         return;
+    if(rect_.y >= 901) slow_move = false;
     if (event.type == SDL_MOUSEMOTION)
     {
 
@@ -152,8 +159,10 @@ void MainObject::handling_movement(SDL_Event &event)
 // IMPLEMENT HANDLING SHOOTING
 void MainObject::handling_shooting(SDL_Event &event)
 {
-    if (health <= 0)
+    if (health <= 0 || slow_move == true)
         return;
+
+
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         if (event.button.button == SDL_BUTTON_LEFT)
@@ -251,6 +260,8 @@ void MainObject::render_shooting()
 {
     if (health <= 0)
         return;
+    if(slow_move == true) return;
+
     // Remove any bullets that have gone off-screen or hit a target.
     for (auto it = ammo_list.begin(); it != ammo_list.end();)
     {
@@ -355,8 +366,12 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
             Mix_AllocateChannels(100);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
             Mix_VolumeChunk(hit_sound, 80);
+            slow_move = true;
             health = health - 1;
             chicken->get_eggs_list()[i]->set_alive(false);
+            
+            set_rect_cordinate(835, 1300);
+
             return;
         }
     }
@@ -399,16 +414,16 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
     if (check_collision_2_rect(boss->get_rect(), rect_) == true)
     {
         Explosion *explosion = new Explosion();
-   
+
         explosion->set_is_on_screen(true);
         explosion->load_animation_sprite(renderer, "res/image/explosion.png");
         explosion->set_clips();
         explosion->set_coordinates(MainObject::rect_.x - 15, MainObject::rect_.y - 15);
         explosion_list.push_back(explosion);
-   
+
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
-   
+
         health = health - 1;
         return;
     }
@@ -506,6 +521,30 @@ void MainObject::processing_if_got_present(Present *present)
         }
     }
 }
+
+void MainObject::slowly_move_from_bottom()
+{
+    if(slow_move == false) return;
+    if(rect_.y <= 800) 
+    {
+        slow_move = false;
+    }
+
+    rect_.y -= 5; 
+    Uint32 currentTicks = SDL_GetTicks();
+    if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
+    {
+        MAIN_OBJECT_spriteIndex = (MAIN_OBJECT_spriteIndex + 1) % MAIN_OBJECT_NUMS_FRAME;
+        MAIN_OBJECT_startTicks = currentTicks;
+    }
+    rect_.w = static_cast<int>(witdth_of_sprite * MAIN_OBJECT_SCALE);
+    rect_.h = static_cast<int>(height_of_sprite * MAIN_OBJECT_SCALE);
+
+    SDL_Rect destRect = {rect_.x, rect_.y, rect_.w, rect_.h};
+
+    SDL_RenderCopy(renderer, texture_, &frame_clip[MAIN_OBJECT_spriteIndex], &destRect);
+}
+
 // IMPLEMENT FREE METHOD
 void MainObject::free()
 {

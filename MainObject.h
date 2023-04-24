@@ -41,6 +41,8 @@ protected:
     Mix_Chunk *hit_sound;
     Mix_Chunk *getting_present_sound;
     int number_of_wings = 0;
+    Uint32 slow_move_timer;
+    bool slow_move;
     int health;
     int ammo_type = 1; // 1 mean BORON , 2 mean NEUTRON
     bool got_hit;
@@ -113,6 +115,6 @@ public:
     {
         return MainObject::is_win;
     }
-
+    void slowly_move_from_bottom();
 };
 #endif
