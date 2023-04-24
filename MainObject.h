@@ -35,7 +35,7 @@ protected:
     SDL_Rect frame_clip[MAIN_OBJECT_NUMS_FRAME];
     int witdth_of_sprite;
     int height_of_sprite;
-    std::vector<AmmoObject*> ammo_list;
+    std::vector<AmmoObject *> ammo_list;
     Mix_Chunk *shoot_sound;
     Mix_Chunk *eat_wing_sound;
     Mix_Chunk *hit_sound;
@@ -49,7 +49,7 @@ protected:
     int ammo_level = 0;
 
 public:
-    std::vector<Explosion*> explosion_list;
+    std::vector<Explosion *> explosion_list;
     MainObject();
     ~MainObject();
 
@@ -101,7 +101,6 @@ public:
     void processing_if_hit_by_boss(Boss *boss);
     void processing_if_hit_by_boss_egg(Boss *boss);
 
-
     int get_health() const { return health; }
     void set_health(const int &health) { this->health = health; }
     // Free the texture
@@ -111,10 +110,18 @@ public:
     void set_num_of_wings(const int &num_of_wings) { number_of_wings = num_of_wings; }
 
     void set_is_win(const bool &is_win) { this->is_win = is_win; }
-    bool get_is_win() const 
+    bool get_is_win() const
     {
         return MainObject::is_win;
     }
     void slowly_move_from_bottom();
+
+    void set_slow_move()
+    {
+        slow_move = true;
+        set_rect_cordinate(835, 1400);
+    }
+
+    bool get_slow_move() const { return slow_move;}
 };
 #endif

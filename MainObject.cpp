@@ -326,8 +326,9 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
 {
     if (health <= 0)
         return;
-    if ((chicken->get_health() != 0) && (check_collision_2_rect(chicken->get_rect(), rect_) == true) && (chicken->get_on_screen() == true))
+    if ((chicken->get_health() >= 1) && (check_collision_2_rect(chicken->get_rect(), rect_) == true) && (chicken->get_on_screen() == true))
     {
+        if(slow_move == true) return;
         Explosion *explosion = new Explosion();
         explosion->set_is_on_screen(true);
         explosion->load_animation_sprite(renderer, "res/image/explosion.png");
@@ -341,6 +342,7 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
         chicken->set_on_screen(false);
         chicken->set_alive(false);
         MainObject::health = MainObject::health - 1;
+        set_slow_move();
         return;
     }
 }
@@ -366,16 +368,16 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
             Mix_AllocateChannels(100);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
             Mix_VolumeChunk(hit_sound, 80);
-            slow_move = true;
             health = health - 1;
             chicken->get_eggs_list()[i]->set_alive(false);
             
-            set_rect_cordinate(835, 1300);
+            set_slow_move();
 
             return;
         }
     }
 }
+
 
 void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
 {
@@ -401,6 +403,7 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
             MainObject::health = MainObject::health - 1;
             boss->get_egg_list()[i]->set_alive(false);
+            set_slow_move();
             return;
         }
     }
@@ -411,7 +414,7 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
     if (health <= 0 || boss->get_health() <= 0)
         return;
 
-    if (check_collision_2_rect(boss->get_rect(), rect_) == true)
+    if (check_collision_2_rect(boss->get_rect(), rect_) == true && slow_move == false)
     {
         Explosion *explosion = new Explosion();
 
@@ -425,6 +428,9 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
 
         health = health - 1;
+
+        set_slow_move();
+        
         return;
     }
 
@@ -460,6 +466,7 @@ void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
         asteroid->set_health(-1);
         asteroid->set_is_on_screen(false);
         asteroid->set_rect_cordinate_and_width_height(-9999, -9999, 0, 0);
+        set_slow_move();
         return;
     }
     for (int i = 0; i < ammo_list.size(); i++)
@@ -530,7 +537,7 @@ void MainObject::slowly_move_from_bottom()
         slow_move = false;
     }
 
-    rect_.y -= 5; 
+    rect_.y -= 3; 
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
     {

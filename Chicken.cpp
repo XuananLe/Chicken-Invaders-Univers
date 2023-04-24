@@ -248,6 +248,7 @@ void Chicken::moving_like_a_circle()
 // HANDLE SHOOTING EGGS AT A RANDOM TIME
 void Chicken::handle_shooting_eggs_toward_player(MainObject *main_object)
 {
+    if(main_object->get_slow_move() == true) return;
     if (health_ <= 0 || !is_on_screen)
     {
         return;
