@@ -57,7 +57,9 @@ void Egg::render()
         return;
     if (is_broken == false)
     {
-        spinning_egg += 5;
+        if(level != 3)
+        spinning_egg += 0;
+        else spinning_egg += 30;
         if (spinning_egg >= 360)
             spinning_egg = 0;
 

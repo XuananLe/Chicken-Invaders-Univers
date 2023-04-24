@@ -152,12 +152,15 @@ void GameMenu::render_time(MainObject *player)
 {
     if (player->get_health() <= 0)
         return;
+    if(is_paused == false)
+    {
     last_time = start_time;
     start_time = SDL_GetTicks();
     elapsed_time = start_time - last_time;
     int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
     int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
     sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
+    } 
     SDL_Color color = {255, 0, 0, 255};
     SDL_Surface *surface = TTF_RenderText_Solid(GameMenu::new_font, time_text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);

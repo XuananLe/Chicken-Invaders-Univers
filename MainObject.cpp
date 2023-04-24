@@ -537,7 +537,7 @@ void MainObject::slowly_move_from_bottom()
         slow_move = false;
     }
 
-    rect_.y -= 3; 
+    rect_.y -= 10; 
     Uint32 currentTicks = SDL_GetTicks();
     if (currentTicks - MAIN_OBJECT_startTicks > MAIN_OBJECT_spritetime)
     {

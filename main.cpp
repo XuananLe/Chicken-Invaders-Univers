@@ -10,7 +10,7 @@
 #include "Chicken.h"
 Mix_Music *background_music = NULL;
 
-// ======================= Enity Variable ======================= \\
+// ======================= Variable ======================= \\
 bool InitData();
 
 GameMenu *menu = new GameMenu();
@@ -196,19 +196,19 @@ void update_game_state()
 
 void process_chicken_vs_player(Chicken *chicken, MainObject *player)
 {
-    if (is_paused == true)
-        return;
     for (int i = 0; i < chicken_number; i++)
     {
-        chicken[i].render_animation(renderer, 1.55);
+        if (is_paused == false)
+        {
+            chicken[i].moving_diagnoally();
 
-        chicken[i].moving_diagnoally();
+            chicken[i].handle_shooting_eggs_toward_player(player);
+            chicken[i].shooting_eggs_toward_player();
 
-        chicken[i].handle_shooting_eggs_toward_player(player);
-        chicken[i].shooting_eggs_toward_player();
-
+            chicken[i].generate_present();
+        }
         chicken[i].render_the_eggs();
-        chicken[i].generate_present();
+        chicken[i].render_animation(renderer, 1.55);
     }
     for (int i = 0; i < chicken_number; i++)
     {
@@ -287,14 +287,13 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
                 times_player_want_to_playagain++;
             }
         }
-        if (is_paused == true)
-            return;
 
-        player->handling_movement(event);
-        player->handling_shooting(event);
+        if (is_paused == false)
+        {
+            player->handling_movement(event);
+            player->handling_shooting(event);
+        }
     }
-    if (is_paused == true)
-        return;
 
     Uint32 current_time = SDL_GetTicks();
     if ((current_time - last_time_present_fall_down) >= 10000 && player->get_health() <= 2 && present->get_is_on_screen() == false)
@@ -316,9 +315,11 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     present->update();
 
     std::cout << player->get_rect().x << " " << player->get_rect().y << std::endl;
-
-    player->processing_if_got_present(present);
-    player->render_shooting();
+    if (is_paused == false)
+    {
+        player->processing_if_got_present(present);
+        player->render_shooting();
+    }
     player->render_animation(renderer, MAIN_OBJECT_SCALE);
     for (int i = 0; i < player->explosion_list.size(); i++)
     {
@@ -357,14 +358,15 @@ void init_menu(GameMenu *menu)
 
 void process_astroid_vs_player(Asteroid *asteroid, MainObject *player)
 {
-    if (is_paused == true)
-        return;
     for (int i = 0; i < number_of_asteroid; i++)
     {
+        if (is_paused == false)
+        {
+            asteroid[i].moving_diagonal();
+            asteroid[i].spinning();
+            player->process_if_hit_by_asteroid(&asteroid[i]);
+        }
         asteroid[i].render_with_angle();
-        asteroid[i].moving_diagonal();
-        asteroid[i].spinning();
-        player->process_if_hit_by_asteroid(&asteroid[i]);
     }
 } //
 
@@ -391,21 +393,22 @@ void intro_before_level(int level)
 
 void process_boss_vs_player(Boss *boss, MainObject *player)
 {
-    if (is_paused == true)
-        return;
     for (int i = 0; i < 1; i++)
     {
-        boss[i].render_animation(renderer, 1);
-        boss[i].render_health_bar();
         if (player->get_health() <= 0)
             return;
-        boss[i].moving_toward_player(player);
-        // std::cout << boss[i].get_rect().x << " " << boss[i].get_rect().y << std::endl;
-        boss[i].firing_eggs();
-        boss[i].update_the_eggs();
+        if (is_paused == false)
+        {
+            boss[i].moving_toward_player(player);
+            boss[i].firing_eggs();
+            boss[i].update_the_eggs();
+            player->processing_if_hit_by_boss(&boss[i]);
+            player->processing_if_hit_by_boss_egg(&boss[i]);
+        }
+
+        boss[i].render_animation(renderer, 1);
+        boss[i].render_health_bar();
         boss[i].render_the_eggs();
-        player->processing_if_hit_by_boss(&boss[i]);
-        player->processing_if_hit_by_boss_egg(&boss[i]);
     }
 }
 
@@ -413,7 +416,7 @@ void menu_process_player_related_event()
 {
     if (menu != NULL)
     {
-        if (is_paused == false && player->get_health() > 0 && menu->get_game_has_started() == true && level != 4)
+        if (player->get_health() > 0 && menu->get_game_has_started() == true && level != 4)
         {
             menu->render_time(player);
         }
@@ -575,6 +578,7 @@ int main(int argc, char *argv[])
     SDL_Quit();
     return 0;
 }
+
 bool InitData()
 {
     if (SDL_Init(SDL_INIT_EVERYTHING) != 0)
