@@ -16,6 +16,7 @@ protected:
     SDL_Rect option_rect = {0,0,SCREEN_WIDTH,SCREEN_HEIGHT};
     SDL_Texture *before_level_texture = NULL;
     SDL_Texture *health_bar_texture = NULL;
+    SDL_Texture* user_texture = IMG_LoadTexture(renderer, "res/image/user.png");
     TTF_Font* transition_level = NULL;
     SDL_Rect menu_rect;    
     SDL_Color color = {102, 102, 225}; // blue
@@ -29,6 +30,8 @@ protected:
     char time_text[16];
     Mix_Chunk *game_win = Mix_LoadWAV("res/sound/game_win.wav");
     Mix_Chunk *game_over = Mix_LoadWAV("res/sound/game_over.wav");
+
+    bool logged_in = false;
 public:
     GameMenu();
     SDL_Texture* get_texture() const {return menu_texture;}
@@ -42,5 +45,7 @@ public:
     void render_game_over(MainObject* player);
     void render_health_bar(MainObject* player);
     void render_time(MainObject* player);
+    void render_user();
+
 };
 #endif

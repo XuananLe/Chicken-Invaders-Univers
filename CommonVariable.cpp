@@ -12,7 +12,7 @@ const double MAIN_OBJECT_SCALE = 0.35;
 const double CHICKEN_OBJECT_SCALE = 1.55;
 
 const int number_of_asteroid = 1;
-const int chicken_number = 1;
+const int chicken_number = 3;
 
 bool is_paused = false;
 bool player_want_to_play_again = false;

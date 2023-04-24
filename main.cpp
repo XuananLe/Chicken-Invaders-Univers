@@ -314,6 +314,16 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
 
     present->render();
     present->update();
+    for (int i = 0; i < player->explosion_list.size(); i++)
+    {
+        player->explosion_list[i]->render_animation(renderer);
+        if (!player->explosion_list[i]->get_is_on_screen())
+        {
+            delete player->explosion_list[i];
+            player->explosion_list.erase(player->explosion_list.begin() + i);
+            i--;
+        }
+    }
 
     player->processing_if_got_present(present);
     player->render_shooting();
@@ -409,6 +419,10 @@ void menu_process_player_related_event()
     }
     else
         return;
+    if (menu->get_game_has_started() == false)
+    {
+        menu->render_user();
+    }
     if (player->get_health() <= 0)
     {
         menu->render_game_over(player);

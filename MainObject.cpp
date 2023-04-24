@@ -4,6 +4,7 @@
 Uint32 MAIN_OBJECT_startTicks = 0;
 Uint32 MAIN_OBJECT_spriteIndex = 0;
 const Uint32 MAIN_OBJECT_spritetime = 100;
+
 // IMPLEMENT CONSTRUTOR AND DESTRUCTOR
 MainObject::MainObject()
 {
@@ -16,7 +17,7 @@ MainObject::MainObject()
     witdth_of_sprite = 0;
     hit_sound = Mix_LoadWAV("res/sound/player_hit.wav");
     getting_present_sound = Mix_LoadWAV("res/sound/get_weapon.wav");
-    health = 3;
+    health = 1000;
     ammo_level = 0;
     height_of_sprite = 0;
     rect_.x = SCREEN_WIDTH / 2;
@@ -103,7 +104,6 @@ SDL_Rect MainObject::get_rect_width_height_with_scale(const double &scale) const
     SDL_Rect rect = {rect_.x, rect_.y, static_cast<int>(rect_.w * scale), static_cast<int>(rect_.h * scale)};
     return rect;
 }
-
 
 // IMPLEMENT HANDLING MOVEMENT
 void MainObject::handling_movement(SDL_Event &event)
@@ -322,7 +322,7 @@ void MainObject::process_if_hit_by_chicken(Chicken *chicken)
         explosion->load_animation_sprite(renderer, "res/image/explosion.png");
         explosion->set_clips();
         explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
-        explosion->render_animation(renderer);
+        explosion_list.push_back(explosion);
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
         Mix_VolumeChunk(hit_sound, 64);
@@ -344,12 +344,13 @@ void MainObject::process_if_hit_by_eggs(Chicken *chicken)
         {
             if (chicken->get_eggs_list()[i]->get_alive() == false)
                 return;
+
             Explosion *explosion = new Explosion();
             explosion->set_is_on_screen(true);
             explosion->load_animation_sprite(renderer, "res/image/explosion.png");
             explosion->set_clips();
             explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
-            explosion->render_animation(renderer);
+            explosion_list.push_back(explosion);
             // early return technique
             Mix_AllocateChannels(100);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
@@ -371,13 +372,15 @@ void MainObject::processing_if_hit_by_boss_egg(Boss *boss)
         {
             if (boss->get_egg_list()[i]->get_alive() == false)
                 return;
+            // early return technique
+
             Explosion *explosion = new Explosion();
             explosion->set_is_on_screen(true);
             explosion->load_animation_sprite(renderer, "res/image/explosion.png");
             explosion->set_clips();
             explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
-            explosion->render_animation(renderer);
-            // early return technique
+            explosion_list.push_back(explosion);
+
             Mix_AllocateChannels(100);
             Mix_VolumeChunk(hit_sound, 80);
             Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
@@ -396,13 +399,16 @@ void MainObject::processing_if_hit_by_boss(Boss *boss)
     if (check_collision_2_rect(boss->get_rect(), rect_) == true)
     {
         Explosion *explosion = new Explosion();
+   
         explosion->set_is_on_screen(true);
         explosion->load_animation_sprite(renderer, "res/image/explosion.png");
         explosion->set_clips();
-        explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
-        explosion->render_animation(renderer);
+        explosion->set_coordinates(MainObject::rect_.x - 15, MainObject::rect_.y - 15);
+        explosion_list.push_back(explosion);
+   
         Mix_AllocateChannels(100);
         Mix_PlayChannelTimed(-1, hit_sound, 0, 1000);
+   
         health = health - 1;
         return;
     }
@@ -435,7 +441,7 @@ void MainObject::process_if_hit_by_asteroid(Asteroid *asteroid)
         explosion->load_animation_sprite(renderer, "res/image/explosion.png");
         explosion->set_clips();
         explosion->set_coordinates(MainObject::rect_.x, MainObject::rect_.y);
-        explosion->render_animation(renderer);
+        explosion_list.push_back(explosion);
         asteroid->set_health(-1);
         asteroid->set_is_on_screen(false);
         asteroid->set_rect_cordinate_and_width_height(-9999, -9999, 0, 0);

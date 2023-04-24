@@ -20,8 +20,11 @@ const int MAIN_OBJECT_NUMS_FRAME = 4;
 extern Uint32 MAIN_OBJECT_startTicks;
 extern Uint32 MAIN_OBJECT_spriteIndex;
 extern const Uint32 MAIN_OBJECT_spritetime;
+
 class Boss;
 class Chicken;
+class Explosion;
+
 class MainObject
 {
 protected:
@@ -44,6 +47,7 @@ protected:
     int ammo_level = 0;
 
 public:
+    std::vector<Explosion*> explosion_list;
     MainObject();
     ~MainObject();
 

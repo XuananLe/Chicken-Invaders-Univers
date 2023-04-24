@@ -2,11 +2,7 @@
 #define EXPLOSION_H
 #include "CommonVariable.h"
 #include "MainObject.h"
-
 const int EXPLOSION_NUMS_FRAME = 8;
-extern Uint32 EXPLOSION_startTicks;
-extern Uint32 EXPLOSION_spriteIndex;
-extern const Uint32 EXPLOSION_spritetime;
 class Explosion 
 {
 private:
@@ -14,6 +10,11 @@ SDL_Texture* texture_;
 bool is_on_screen_;
 SDL_Rect rect_;
 SDL_Rect frame_clip[EXPLOSION_NUMS_FRAME];
+int width_of_sprite;
+int height_of_sprite;
+Uint32 EXPLOSION_startTicks = SDL_GetTicks();
+Uint32 EXPLOSION_spriteIndex = 0;
+const Uint32 EXPLOSION_spritetime = 1;
 
 public:
 Explosion();
@@ -26,6 +27,5 @@ void set_coordinates(const int& x, const int& y);
 void render_animation(SDL_Renderer* renderer);
 SDL_Rect get_rect() const { return rect_; }
 void set_frame(const int& frame) { EXPLOSION_spriteIndex = frame; }
-void render_specific_frame(SDL_Renderer* renderer, const int& frame);
 };
 #endif

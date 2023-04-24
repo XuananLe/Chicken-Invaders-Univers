@@ -24,6 +24,11 @@ GameMenu::GameMenu()
 
     new_font = TTF_OpenFont("res/font/arial.ttf", 100);
     game_over = Mix_LoadWAV("res/sound/game_over.wav");
+
+    if (user_texture == NULL)
+    {
+        std::cout << "Error: " << SDL_GetError() << std::endl;
+    }
 }
 GameMenu::~GameMenu()
 {
@@ -35,10 +40,18 @@ void GameMenu::render_menu()
     {
         SDL_RenderCopy(renderer, option_texture, NULL, &option_rect);
     }
+    else if (logged_in == true)
+    {
+        SDL_Rect user_rect = {0, 0, SCREEN_WIDTH, SCREEN_HEIGHT};
+        SDL_RenderCopy(renderer, user_texture, NULL, &user_rect);
+    }
     else if (game_has_started == false)
     {
         SDL_RenderCopy(renderer, menu_texture, NULL, &menu_rect);
     }
+}
+void GameMenu::render_user()
+{
 }
 void GameMenu::render_health_bar(MainObject *player)
 {
@@ -68,12 +81,17 @@ void GameMenu::process_input_menu(SDL_Event &event)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
-        // std::cout << x << " " << y << std::endl;
+        std::cout << x << " " << y << std::endl;
     }
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
+        if (logged_in == true && 11 <= x && x <= 188 && y >= 9 && y <= 189)
+        {
+            logged_in = false;
+            return;
+        }
         if (player_hit_option == 1)
         {
             player_hit_option = -1;
@@ -99,6 +117,10 @@ void GameMenu::process_input_menu(SDL_Event &event)
             const std::string cmd = "xdg-open " + url;
             system(cmd.c_str());
             return;
+        }
+        if (600 <= x && x <= 849 && y >= 900 && y <= 1070 && logged_in == false)
+        {
+            logged_in = true;
         }
     }
 }
@@ -149,7 +171,7 @@ void GameMenu::render_game_over(MainObject *player)
         return;
     const int player_level = level;
     std::string message = "";
-    if(player_level == 4)
+    if (player_level == 4)
     {
         message = "YOU WON THE GAME";
     }
@@ -170,7 +192,6 @@ void GameMenu::render_game_over(MainObject *player)
     SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
     SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
 
-
     Mix_VolumeChunk(GameMenu::game_over, 12);
     Mix_PlayChannelTimed(1, GameMenu::game_over, 1, 1000);
 
@@ -183,5 +204,4 @@ void GameMenu::render_game_over(MainObject *player)
 }
 void GameMenu::render_game_win(MainObject *player)
 {
-     
 }
