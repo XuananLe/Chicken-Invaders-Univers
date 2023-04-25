@@ -8,7 +8,7 @@ Press  ```SPACE``` to pause the game. Press ```ESC``` to quit the game. If you l
 In  Level 1, the player will encounter chickens shooting eggs towards them, which they must avoid while shooting down the chickens to survive. Level 2 features an asteroid rain, where players must navigate through a shower of asteroids while simultaneously shooting them down (You have to shot multiple times in order to the asteroid to dissapear, each time you shoot the asteroid keeps getting smaller and smaller). Finally, Level 3 presents a challenging boss, which shoots eggs in a circular motion and chases after the player.
 
 ### Installation and Play
-## Step 1 : Install SDL2 library
+#### Step 1 : Install SDL2 library
 
 #### For Debian/Ubuntu
 ```sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev```
@@ -18,7 +18,7 @@ In  Level 1, the player will encounter chickens shooting eggs towards them, whic
 ```sudo dnf install SDL2-devel SDL2_image-devel SDL2_mixer-devel SDL2_ttf-devel```
 ```sudo dnf install cmake```
 
-## Step 2 : Clone this repository and run the makefile
+#### Step 2 : Clone this repository and run the makefile
 ```git clone https://github.com/XuananLe/Chicken-Invaders-Univers.git```
 ```make``` or ```./main```
 
