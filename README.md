@@ -4,10 +4,10 @@ This is my game project for INT2215 Advanced Programming course at UET. This gam
 ### Install
 ## Step 1 : Install SDL2 library
 
-# For Debian/Ubuntu
+#### For Debian/Ubuntu
 ```sudo apt install libsdl2-dev libsdl2-image-dev libsdl2-mixer-dev libsdl2-ttf-dev```
 ``` sudo apt install cmake```
-# For Fedora/Redhat
+#### For Fedora/Redhat
 ```sudo dnf install SDL2-devel SDL2_image-devel SDL2_mixer-devel SDL2_ttf-devel```
 ```sudo dnf install cmake```
 
