@@ -14,7 +14,7 @@ double lerp(double a, double b, double t)
 // IPLEMANTATION OF BOSS CONSTRUCTOR AND DESTRUCTOR
 Boss::Boss()
 {
-    health_ = 100;
+    health_ = 1;
     rect_.x = 0;
     rect_.y = 0;
     rect_.w = 200;

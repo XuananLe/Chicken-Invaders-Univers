@@ -1,0 +1,54 @@
+Date : 2023-04-25 15:07:58
+Directory : /home/xuananle/Documents/Chicken-Invaders-Universe
+Total : 29 files,  3162 codes, 175 comments, 313 blanks, all 3650 lines
+
+Languages
++----------+------------+------------+------------+------------+------------+
+| language | files      | code       | comment    | blank      | total      |
++----------+------------+------------+------------+------------+------------+
+| C++      |         28 |      3,160 |        175 |        313 |      3,648 |
+| Makefile |          1 |          2 |          0 |          0 |          2 |
++----------+------------+------------+------------+------------+------------+
+
+Directories
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                  | files      | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                     |         29 |      3,162 |        175 |        313 |      3,650 |
++-----------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++-----------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| filename                                                              | language | code       | comment    | blank      | total      |
++-----------------------------------------------------------------------+----------+------------+------------+------------+------------+
+| /home/xuananle/Documents/Chicken-Invaders-Universe/AmmoObject.cpp     | C++      |         94 |          6 |          7 |        107 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/AmmoObject.h       | C++      |         80 |         23 |         18 |        121 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Asteroid.cpp       | C++      |         90 |          1 |          0 |         91 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Asteroid.h         | C++      |         48 |          3 |          1 |         52 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/BackGround.cpp     | C++      |         40 |          2 |          2 |         44 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/BackGround.h       | C++      |         22 |          1 |          2 |         25 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/BaseObject.cpp     | C++      |         80 |          5 |          1 |         86 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/BaseObject.h       | C++      |         26 |          6 |          5 |         37 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Boss.cpp           | C++      |        162 |          9 |         17 |        188 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Boss.h             | C++      |        121 |          2 |          9 |        132 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Chicken.cpp        | C++      |        346 |         23 |         29 |        398 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Chicken.h          | C++      |        105 |         18 |         32 |        155 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/CommonVariable.cpp | C++      |         49 |          0 |         10 |         59 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/CommonVariable.h   | C++      |         31 |          0 |          3 |         34 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Egg.cpp            | C++      |        109 |          6 |          3 |        118 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Egg.h              | C++      |         40 |          8 |          9 |         57 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/MainObject.cpp     | C++      |        503 |         20 |         48 |        571 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/MainObject.h       | C++      |         91 |         13 |         23 |        127 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Makefile           | Makefile |          2 |          0 |          0 |          2 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/Present.h          | C++      |         88 |          2 |          3 |         93 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/ThemePlayer.cpp    | C++      |         41 |          6 |          2 |         49 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/ThemePlayer.h      | C++      |         17 |          4 |          0 |         21 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/explosion.cpp      | C++      |         78 |          0 |          0 |         78 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/explosion.h        | C++      |         30 |          0 |          1 |         31 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/main.cpp           | C++      |        587 |         16 |         65 |        668 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/menu.cpp           | C++      |        214 |          1 |         20 |        235 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/menu.h             | C++      |         53 |          0 |          2 |         55 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/user.cpp           | C++      |          0 |          0 |          1 |          1 |
+| /home/xuananle/Documents/Chicken-Invaders-Universe/user.h             | C++      |         15 |          0 |          0 |         15 |
+| Total                                                                 |          |      3,162 |        175 |        313 |      3,650 |
++-----------------------------------------------------------------------+----------+------------+------------+------------+------------+

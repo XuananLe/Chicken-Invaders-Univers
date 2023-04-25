@@ -73,6 +73,14 @@ void GameMenu::render_health_bar(MainObject *player)
 }
 void GameMenu::process_input_menu(SDL_Event &event)
 {
+    // if(event.type == SDL_KEYDOWN)
+    // {
+    //     if(event.key.keysym.sym == SDLK_b && level == 4)
+    //     {
+    //         player_pressed_b = true;
+    //     }
+    // }
+
     if (event.type == SDL_QUIT || event.key.keysym.sym == SDLK_ESCAPE)
     {
         exit(EXIT_SUCCESS);
@@ -81,7 +89,7 @@ void GameMenu::process_input_menu(SDL_Event &event)
     {
         int x = 0, y = 0;
         SDL_GetMouseState(&x, &y);
-        std::cout << x << " " << y << std::endl;
+        // std::cout << x << " " << y << std::endl;
     }
     if (event.type == SDL_MOUSEBUTTONDOWN)
     {
@@ -122,6 +130,10 @@ void GameMenu::process_input_menu(SDL_Event &event)
         {
             logged_in = true;
         }
+        if (logged_in == true && 392 <= x and x <= 572 and 390 <= y and y <= 570)
+        {
+            player_add_account = true;
+        }
     }
 }
 void GameMenu::render_before_level(int level)
@@ -152,15 +164,19 @@ void GameMenu::render_time(MainObject *player)
 {
     if (player->get_health() <= 0)
         return;
-    if(is_paused == false)
+    if(player_pressed_b == true)
     {
-    last_time = start_time;
-    start_time = SDL_GetTicks();
-    elapsed_time = start_time - last_time;
-    int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
-    int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
-    sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
-    } 
+        start_time = SDL_GetTicks() - start_time;
+    }
+    if (is_paused == false)
+    {
+        last_time = start_time;
+        start_time = SDL_GetTicks();
+        elapsed_time = start_time - last_time;
+        int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
+        int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
+        sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
+    }
     SDL_Color color = {255, 0, 0, 255};
     SDL_Surface *surface = TTF_RenderText_Solid(GameMenu::new_font, time_text, color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
@@ -172,16 +188,7 @@ void GameMenu::render_game_over(MainObject *player)
 {
     if (player->get_health() > 0)
         return;
-    const int player_level = level;
-    std::string message = "";
-    if (player_level == 4)
-    {
-        message = "YOU WON THE GAME";
-    }
-    else
-    {
-        message = "GAME OVER";
-    }
+    std::string message = "GAME OVER";
     std::string message2 = "YOU HAVE SURVIVED FOR " + std::string(time_text);
     std::string message3 = "PRESS C TO CONTINUE OR ESC TO EXIT";
 
@@ -207,4 +214,32 @@ void GameMenu::render_game_over(MainObject *player)
 }
 void GameMenu::render_game_win(MainObject *player)
 {
+    if(level <= 3) return;
+    GameMenu::User->numbers_player_want_to_play_again = player_want_to_play_again;
+    GameMenu::User->nums_of_wings = player->get_num_of_wings();
+    GameMenu::User->time = time_text;
+
+    std::string message = "YOU HAVE WON THE GAME";
+    std::string message2 = "YOU HAVE SURVIVED FOR " + std::string(time_text);
+    std::string message3 = "PRESS B TO BACK THE MENU";
+
+    SDL_Rect next_line = {before_level.x - 100, before_level.y + 200, before_level.w + 200, before_level.h};
+    SDL_Rect next_line2 = {before_level.x - 100, before_level.y + 400, before_level.w + 200, before_level.h};
+
+    SDL_Surface *surface = TTF_RenderText_Solid(transition_level, message.c_str(), color);
+    SDL_Surface *surface2 = TTF_RenderText_Solid(transition_level, message2.c_str(), color);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
+    SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
+    SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);
+
+    Mix_VolumeChunk(GameMenu::game_over, 12);
+    Mix_PlayChannelTimed(1, GameMenu::game_over, 1, 1000);
+
+    SDL_FreeSurface(surface);
+    SDL_FreeSurface(surface2);
+
+    SDL_RenderCopy(renderer, texture2, NULL, &next_line);
+    SDL_RenderCopy(renderer, texture3, NULL, &next_line2);
+    SDL_RenderCopy(renderer, texture, NULL, &before_level);
 }

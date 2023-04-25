@@ -8,10 +8,11 @@
 #include "Asteroid.h"
 #include "Boss.h"
 #include "Chicken.h"
-Mix_Music *background_music = NULL;
 
 // ======================= Variable ======================= \\
 bool InitData();
+
+Mix_Music *background_music = NULL;
 
 GameMenu *menu = new GameMenu();
 
@@ -133,7 +134,7 @@ bool all_boss_dead(Boss *boss)
 {
     for (int i = 0; i < boss_number; i++)
     {
-        if (boss[i].get_health() >= 1)
+        if (boss[0].get_health() >= 1)
         {
             return false;
         }
@@ -152,6 +153,7 @@ void init_chicken_level_1(Chicken *chicken)
                 chicken[i].set_on_screen(true);
                 chicken[i].set_alive(true);
             }
+            chicken[i].set_health(10);
             chicken[i].generate_present();
             chicken[i].load_animation_sprite(renderer, "res/image/chicken123.png");
             chicken[i].set_clips();
@@ -273,6 +275,10 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
         }
         if (event.type == SDL_KEYDOWN)
         {
+            if (event.key.keysym.sym == SDLK_b && level == 4)
+            {
+                menu->player_pressed_b = true;
+            }
             if (event.key.keysym.sym == SDLK_SPACE)
             {
                 is_paused = !is_paused;
@@ -339,10 +345,10 @@ void init_boss(Boss *boss)
         return;
     for (int i = 0; i < boss_number; i++)
     {
-        boss[i].set_health(100);
         boss[i].set_on_screen(true);
         boss[i].load_animation_sprite(renderer, "res/image/boss.png");
         boss[i].set_clips();
+        boss[0].set_health(1);
     }
     boss[0].set_rect_cordinate(100, 100);
     boss[1].set_rect_cordinate(700, 100);
@@ -432,9 +438,8 @@ void menu_process_player_related_event()
     {
         menu->render_game_over(player);
     }
-    else if (player->get_health() >= 1 && level == 4)
+    else if (level == 4)
     {
-        menu->render_game_over(player);
         menu->render_game_win(player);
     }
 }
@@ -447,25 +452,17 @@ int main(int argc, char *argv[])
         std::cerr << "Failed to initialize SDL2_ttf: " << TTF_GetError() << std::endl;
         return 1;
     }
+    TTF_Font *font = TTF_OpenFont("res/font/arial.ttf", 30);
+    SDL_Color textColor = {255, 0, 0, 0xFF};
 
     while (true)
     {
-        // =================<INIT>================
-
-        srand(time(NULL));
-        init_menu(menu);
-        init_back_ground(back_ground);
-        init_chicken_level_1(chicken);
-        init_chicken_level_1_2(chicken2);
-        init_random_present(present);
-        init_asteroid(asteroid);
-        init_player(player);
-        init_boss(boss);
 
         // =================<MENU>================
         Mix_AllocateChannels(100);
         play_music_level(level, background_music);
 
+        init_menu(menu);
         while (menu->get_game_has_started() == false)
         {
             menu->render_menu();
@@ -475,11 +472,60 @@ int main(int argc, char *argv[])
                 {
                     exit(EXIT_FAILURE);
                 }
+                if (menu->player_add_account == true)
+                {
+                    SDL_StartTextInput();
+                    if (event.type == SDL_KEYDOWN)
+                    {
+                        if (event.key.keysym.sym == SDLK_BACKSPACE && menu->User->user_name.length() >= 1)
+                        {
+                            menu->User->user_name.pop_back();
+                        }
+                        else if (event.key.keysym.sym == SDLK_RETURN)
+                        {
+                            menu->player_add_account = false;
+                            menu->logged_in = false;
+                            menu->User->user_name += "";
+                            SDL_StopTextInput();
+                        }
+                    }
+                    else if (event.type == SDL_TEXTINPUT)
+                    {
+                        menu->User->user_name += event.text.text;
+                    }
+                    if (menu->User->user_name != "")
+                    {
+                        system("clear");
+                        std::cout << menu->User->user_name << std::endl;
+                    }
+                }
                 menu->process_input_menu(event);
+            }
+            if (menu->User->user_name != "" && menu->logged_in == true)
+            {
+                SDL_Surface *textSurface = TTF_RenderText_Solid(font, menu->User->user_name.c_str(), textColor);
+                SDL_Texture *textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+                SDL_FreeSurface(textSurface);
+
+                SDL_Rect textRect = {681, 500, textSurface->w * 2, textSurface->h * 2};
+                SDL_SetRenderDrawColor(renderer, 255, 0, 0, 15);
+                SDL_RenderDrawRect(renderer, &textRect);
+                SDL_RenderCopy(renderer, textTexture, NULL, &textRect);
             }
             SDL_RenderPresent(renderer);
             SDL_RenderClear(renderer);
         }
+
+        // =================<INIT>================ \\
+
+        srand(time(NULL));
+        init_back_ground(back_ground);
+        init_chicken_level_1(chicken);
+        init_chicken_level_1_2(chicken2);
+        init_random_present(present);
+        init_asteroid(asteroid);
+        init_player(player);
+        init_boss(boss);
 
         // ===============<LEVEL 1>================
 
@@ -512,7 +558,7 @@ int main(int argc, char *argv[])
         }
 
         // ===============<LEVEL 2>================
-
+        init_asteroid(asteroid);
         intro_before_level(level);
         Mix_VolumeMusic(10);
         play_music_level(level, background_music);
@@ -531,7 +577,6 @@ int main(int argc, char *argv[])
                 player->set_ammo_level(0);
                 player_want_to_play_again = false;
                 player->set_rect_cordinate(SCREEN_WIDTH / 2 - player->get_rect().w / 2, SCREEN_HEIGHT / 2 - player->get_rect().h / 2);
-                init_asteroid(asteroid);
             }
             menu_process_player_related_event();
             update_game_state();
@@ -562,12 +607,27 @@ int main(int argc, char *argv[])
             }
             menu_process_player_related_event();
             update_game_state();
+            for (int i = 0; i < boss_number; i++)
+            {
+                if (boss[i].get_health() >= 1)
+                {
+                    std::cout << i << " Still alive" << std::endl;
+                }
+            }
         }
+
         while (level == 4)
         {
+            std::cout << "LEVEL 4" << std::endl;
             common_process(player, present, event);
             menu_process_player_related_event();
             update_game_state();
+            if (menu->player_pressed_b == true)
+            {
+                std::cout << "Player pressed B" << std::endl;
+                menu->game_has_started = false; // back to the menu
+                break;
+            }
         }
     }
     player->free();
