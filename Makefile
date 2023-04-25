@@ -1,2 +1,2 @@
 -all:
-	g++ CommonVariable.cpp user.cpp ThemePlayer.cpp BaseObject.cpp Asteroid.cpp BackGround.cpp explosion.cpp menu.cpp Egg.cpp Chicken.cpp Boss.cpp AmmoObject.cpp MainObject.cpp main.cpp -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -o main; ./main
+	g++ CommonVariable.cpp BaseObject.cpp user.cpp ThemePlayer.cpp Asteroid.cpp BackGround.cpp explosion.cpp menu.cpp Egg.cpp Chicken.cpp Boss.cpp AmmoObject.cpp MainObject.cpp main.cpp -lSDL2 -lSDL2_image -lSDL2_mixer -lSDL2_ttf -o main; ./main

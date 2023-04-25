@@ -24,6 +24,11 @@ In  Level 1, the player will encounter chickens shooting eggs towards them, whic
 ```make``` or ```./main```
 
 ### Game demo
+
+#### Menu 
+At the menu you can select the button to quit the game, press ```Options``` to see the instruction of the game, press ```Account``` to type in your user name and save it. 
+![Alt Text](res/image/logo.png)
+
 #### Level 1
 
 
