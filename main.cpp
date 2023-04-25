@@ -74,6 +74,7 @@ void init_asteroid(Asteroid *asteroid)
 {
     for (int i = 0; i < number_of_asteroid; i++)
     {
+        asteroid[i].set_health();
         if (asteroid[i].get_is_on_screen() == false || asteroid[i].get_health() <= 0)
         {
             asteroid[i].set_width_height(75, 68);
@@ -164,7 +165,7 @@ void init_chicken_level_1(Chicken *chicken)
             if (chicken[i].get_texture() == NULL)
             {
                 std::cout << "Chicken texture is NULL" << std::endl;
-                exit(EXIT_FAILURE);
+                exit(EXIT_SUCCESS);
             }
         }
     }
@@ -302,7 +303,7 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     }
 
     Uint32 current_time = SDL_GetTicks();
-    if ((current_time - last_time_present_fall_down) >= 10000 && player->get_health() <= 2 && present->get_is_on_screen() == false)
+    if ((current_time - last_time_present_fall_down) >= 10000 && player->get_health() <= 10 && present->get_is_on_screen() == false)
     {
         present->set_is_on_screen(true);
         present->set_rect_cordinate(rand() % SCREEN_WIDTH, 0);
@@ -320,7 +321,6 @@ void common_process(MainObject *player, Present *present, SDL_Event &event)
     present->render();
     present->update();
 
-    std::cout << player->get_rect().x << " " << player->get_rect().y << std::endl;
     if (is_paused == false)
     {
         player->processing_if_got_present(present);

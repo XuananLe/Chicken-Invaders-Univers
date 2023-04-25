@@ -27,7 +27,7 @@ void set_width_height(const int& width, const int& height);
 SDL_Rect get_rect() const{return this->rect_;}
 void set_speed(const int& speed){this->speed_ = speed;}
 int get_speed() const{return this->speed_;}
-void set_health(const int& health){this->health_ = health;}
+void set_health(const int& health = 3){this->health_ = health;}
 int get_health() const{return this->health_;}
 void set_is_on_screen(const bool& is_on_screen){this->is_on_screen = is_on_screen;}
 bool get_is_on_screen() const{return this->is_on_screen;}

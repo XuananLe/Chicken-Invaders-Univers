@@ -167,6 +167,11 @@ void GameMenu::render_time(MainObject *player)
     if(player_pressed_b == true)
     {
         start_time = SDL_GetTicks() - start_time;
+        last_time = start_time;
+        elapsed_time = start_time - last_time;
+        int seconds = (start_time / (1000)) % 60;          // Calculate the number of seconds
+        int minutes = start_time / ((1000 * 60));          // Calculate the number of minutes
+        sprintf(time_text, "%02d:%02d", minutes, seconds); // Format the time as mm:ss
     }
     if (is_paused == false)
     {
@@ -229,6 +234,7 @@ void GameMenu::render_game_win(MainObject *player)
     SDL_Surface *surface = TTF_RenderText_Solid(transition_level, message.c_str(), color);
     SDL_Surface *surface2 = TTF_RenderText_Solid(transition_level, message2.c_str(), color);
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
+    
     SDL_Texture *texture2 = SDL_CreateTextureFromSurface(renderer, surface2);
     SDL_Surface *surface3 = TTF_RenderText_Solid(transition_level, message3.c_str(), color);
     SDL_Texture *texture3 = SDL_CreateTextureFromSurface(renderer, surface3);

@@ -6,6 +6,7 @@
 #include "CommonVariable.h"
 #include "Egg.h"
 class MainObject;
+class Egg;
 const int CHICKEN_NUMS_FRAME = 18;
 extern Uint32 CHICKEN_startTicks;
 extern Uint32 CHICKEN_spriteIndex;

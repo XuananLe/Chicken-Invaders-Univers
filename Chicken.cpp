@@ -14,6 +14,7 @@ Chicken::Chicken()
     angle_increment = 2;
     egg_shooting_prob_ = 0.5; // Mean that the chicken has 50% chance to shoot an egg
     scale = 1;
+
     angle_ = 90; // IF angle = 0, meaning that the chicken is moving horizontally
     width_of_sprite = 0;
     height_of_sprite = 0;
@@ -23,7 +24,7 @@ Chicken::Chicken()
     alive_ = true;
 
     has_wing = (rand() % 100 <= 70) ? true : false;
-    has_present = (rand() % 100 + 1) < 30 ? true : false;
+    has_present = (rand() % 100 <= 50) ? true : false;
 
     last_egg_time_ = SDL_GetTicks();
     broken_egg_time_ = SDL_GetTicks();
@@ -185,65 +186,6 @@ void Chicken::render_animation(SDL_Renderer *renderer, const double &scale)
     }
 }
 
-// IMPLEMENTATION OF CHICKEN MOVEMENT BACK AND FORTH
-void Chicken::moving_back_and_forth()
-{
-    if (health_ <= 0)
-        return;
-    if (is_on_screen == false)
-        return;
-    if (x_direction_ == 1)
-    {
-        rect_.x += speed_;
-        if (rect_.x + rect_.w >= SCREEN_WIDTH)
-        {
-            x_direction_ = -1;
-        }
-    }
-    else
-    {
-        rect_.x -= speed_;
-        if (rect_.x <= 0)
-        {
-            x_direction_ = 1;
-        }
-    }
-}
-
-void Chicken::moving_toward_the_player(MainObject *main_object)
-{
-    if (health_ <= 0)
-        return;
-    if (is_on_screen == false)
-        return;
-    double dx = main_object->get_rect().x - rect_.x;
-    double dy = main_object->get_rect().y - rect_.y;
-    double distance = sqrt(dx * dx + dy * dy);
-    double unit_x = dx / distance;
-    double unit_y = dy / distance;
-    double speed = 10;
-    Chicken::v_x = unit_x * speed;
-    Chicken::v_y = unit_y * speed;
-}
-void Chicken::moving_toward_the_player()
-{
-    rect_.x += Chicken::v_x;
-    rect_.y += Chicken::v_y;
-}
-
-// IMPLEMENTATION OF CHICKEN MOVEMENT LIEK A CIRCLE
-void Chicken::moving_like_a_circle()
-{
-    rect_.x = MIDDLE_X + radius_ * cos(angle_);
-    rect_.y = MIDDLE_Y + radius_ * sin(angle_);
-
-    // update angle for next frame
-    angle_ += angle_increment;
-    if (angle_ > 2 * M_PI)
-    {
-        angle_ -= 2 * M_PI;
-    }
-}
 
 // HANDLE SHOOTING EGGS AT A RANDOM TIME
 void Chicken::handle_shooting_eggs_toward_player(MainObject *main_object)

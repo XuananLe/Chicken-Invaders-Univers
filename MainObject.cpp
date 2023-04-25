@@ -17,7 +17,7 @@ MainObject::MainObject()
     witdth_of_sprite = 0;
     hit_sound = Mix_LoadWAV("res/sound/player_hit.wav");
     getting_present_sound = Mix_LoadWAV("res/sound/get_weapon.wav");
-    health = 1000;
+    health = 10;
     ammo_level = 0;
     height_of_sprite = 0;
     rect_.x = SCREEN_WIDTH / 2;
@@ -501,7 +501,9 @@ void MainObject::processing_if_got_present(Present *present)
         present->set_is_on_screen(false);
         if (present->get_kind_of_present() == 0)
         {
-            if (MainObject::health >= 3)
+
+            // 10 is the max health at this moment
+            if (MainObject::health >= 10)
                 return;
             MainObject::health += 1;
         }
