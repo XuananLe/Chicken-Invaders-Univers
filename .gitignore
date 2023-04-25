@@ -1,6 +1,6 @@
 # Prerequisites
 *.d
-
+.VSCodeCounter/
 # Compiled Object files
 *.slo
 *.lo
