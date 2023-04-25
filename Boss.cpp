@@ -5,16 +5,10 @@ Uint32 BOSS_startTicks = 0;
 Uint32 BOSS_spriteIndex = 0;
 const Uint32 BOSS_NUMBER_OF_EGGS = 9;
 const Uint32 BOSS_spritetime = 100;
-const Uint32 MOVE_INTERVAL_MS = 1000; // Move every 1 seconds   
-const double ATTACK_DISTANCE_SQUARED = 10000.0; // 100 pixels squared
-double lerp(double a, double b, double t)
-{
-    return (1.0 - t) * a + t * b;
-}
 // IPLEMANTATION OF BOSS CONSTRUCTOR AND DESTRUCTOR
 Boss::Boss()
 {
-    health_ = 1;
+    health_ = 100;
     rect_.x = 0;
     rect_.y = 0;
     rect_.w = 200;
@@ -30,13 +24,9 @@ Boss::Boss()
     last_egg_time = SDL_GetTicks();
     width_of_sprite = 0;
     height_of_sprite = 0;
-    last_egg_firing_time = SDL_GetTicks();
     is_on_screen = true;
     shooting_egg_sound_ = Mix_LoadWAV("res/sound/Laying_eggs.wav");
     boss_shit = Mix_LoadWAV("res/sound/Ci1bosshit.wav");
-    dir_x = 0;
-    dir_y = 0;
-    prev_collision_dir_ = "x";
 
 }
 Boss::~Boss()

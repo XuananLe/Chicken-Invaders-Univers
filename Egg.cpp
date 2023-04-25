@@ -78,21 +78,6 @@ void Egg::render()
     }
 }
 // IMPLEMENTATION OF UPDATE METHOD FOR EGG
-void Egg::move_horizontally()
-{
-    speed_ = 10;
-    if (alive_ == false)
-        return;
-    if (is_broken == false)
-        rect_.y += speed_;
-    if (rect_.y >= 1035)
-    {
-        rect_.w = 76;
-        rect_.h = 57;
-        // The egg has reached the bottom, so it should break
-        is_broken = true;
-    }
-}
 void Egg::move_diagonally()
 {
     if (is_broken == true)
